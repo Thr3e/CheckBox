@@ -1,0 +1,13 @@
+{
+    "colorList" : {
+        "light"   :"#fef4e8",
+        "dark"    :"#283e56",
+        "cur"     :"#970747",
+        "week"    :"#1989ac",
+        "passed"  :"#57a99a",
+        "positive":"#0c907d",
+        "negative":"#db3951"
+    },
+    "monthList" : ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+    "weekList"  : ["Sun","Mon","Tus","Wen","Thu","Fri","Sat"]
+}
