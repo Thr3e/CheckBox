@@ -120,7 +120,7 @@ class Tools {
                     make.height.equalTo(parseInt(this.getDaySource().length / 7) * ($("calender_view").info.cellH - 1))
                 })
                 $("calender").updateLayout((make) => {
-                    make.height.equalTo(parseInt(this.getDaySource().length / 7) * ($("calender_view").info.cellH - 1) + $("calender_view").info.titleH * 2 + $("calender_view").info.infoH)
+                    make.height.equalTo(parseInt(this.getDaySource().length / 7) * $("calender_view").info.cellH + $("calender_view").info.titleH * 2 + $("calender_view").info.infoH)
                 })
                 $('calender_info_view').text = this.getWorkTimeText(wtInfo).labelText + this.getWorkTimeText(wtInfo).aveDayStr
             }
