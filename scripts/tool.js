@@ -105,9 +105,11 @@ class Tools {
 
     reloadView(type){
         var wtInfo = $cache.get("wtInfo")
+        var $consts = JSON.parse($file.read("assets/constant.json").string)
         switch(type){
             case "check" : {
                 $('total_count_view').text = "TotalCount: " + Math.abs(wtInfo.total)
+                $('total_count_view').textColor = $color(wtInfo.total >= 0 ?$consts.colorList.positive:$consts.colorList.negative)
                 $('date_info_view').text = $cache.get("curDay").dateStr + " " + this.getWorkTimeText(wtInfo).shortWT
             };
             case "month" : {

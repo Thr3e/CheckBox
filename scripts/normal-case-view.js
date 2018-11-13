@@ -74,6 +74,7 @@ var message_view = {
     },
     events:{
       tapped(sender){
+        var wtInfo = $cache.get("wtInfo")
         sender.text = sender.text.indexOf("min") === -1 ?"TotalCount: " + tools.getWorkTimeText(wtInfo).timeStr : "TotalCount: " + Math.abs(wtInfo.total)
       }
     }

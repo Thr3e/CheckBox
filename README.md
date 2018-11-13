@@ -61,3 +61,5 @@
 - version 0.1.1
 - 完成主页scroll视图展示
 - 隐藏主页topBar及title
+- 修复bug:checkView中总工时统计，若发生正负工时变化，会导致字体颜色显示错误，
+- 修复bug:checkView中总工时点击事件，数据来源有误
