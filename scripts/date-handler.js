@@ -49,7 +49,6 @@ class DateHandler{
         for (var k = 6; k > lastDate; k--){
             list.push("")
         }
-        $cache.set("dayList", list)
         return list
     }
 }

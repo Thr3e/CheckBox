@@ -10,16 +10,6 @@ var wtInfo = $cache.get("wtInfo")
 var titleH = 40
 var cellH  = 47
 var infoH  = 70
-var selectCell = {
-    year:dateHandler.currentTime.year,
-    month:dateHandler.currentTime.month,
-    day:dateHandler.currentTime.day
-}
-var Param = {
-    dayList:dateHandler.dayList,
-    workTimeList:sqlHandler.getTotalTime(selectCell).wtList,
-    selectDate:selectCell
-}
 
 var calender_time_view = {
     type:"view",
@@ -60,13 +50,12 @@ var calender_time_view = {
     },
     events:{
         tapped: function(sender){
-            tools.datePicker(2, 
-                Array(2).fill(Array.from(Array(10).keys(), x => x + 2016 + "年")).fill(Array.from(Array(12).keys(), x => x + 1 + "月"), 1),
+            tools.datePicker(1, "", 
                 function(date){
                     var selectDay = {
-                        year:date[0].slice(0, 4) * 1,
-                        month:date[1].slice(0, date[1].indexOf('月')) * 1,
-                        day:0
+                        year:date[3] * 1,
+                        month:$consts.sortMonthObj[date[1]] * 1,
+                        day:date[2]
                     }
                     var id = tools.getDateId(selectDay)
                     //刷新数据
@@ -207,10 +196,7 @@ var calender_view = {
             lines : dateHandler.getDayList($cache.get("selectDay")).length / 7
         }
     },
-    layout:function(make, view){
-        make.center.equalTo(view.super)
-        make.size.equalTo(view.super)
-    },
+    layout:$layout.fill,
     views:[
         calender_time_view,
         calender_title_view,

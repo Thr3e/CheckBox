@@ -1,5 +1,6 @@
 const nor_view  = require('./normal-case-view')
-const calender  = require('./calendar-component')
+const calender  = require('./calendar-view')
+const forget_view = require('./forgotten-case-view')
 const DateHandler = require('./date-handler')
 const SQLHandler  = require('./sql-handler')
 const Tools       = require('./tool')
@@ -44,6 +45,20 @@ $ui.render({
         make.height.equalTo((calender.props.info.cellH * calender.props.info.lines + calender.props.info.titleH * 2 + calender.props.info.infoH))
       },
       views:[calender]
+    },{
+      type:"view",
+      props:{
+        clipsToBounds:true,
+        id:"forget"
+      },
+      layout:function(make){
+        var wid = WID * 0.8
+        make.top.equalTo($('calender').bottom).offset(30)
+        make.left.inset((WID - wid) / 2)
+        make.width.equalTo(wid)
+        make.height.equalTo(forget_view.props.info.lines * forget_view.props.info.lineH)
+      },
+      views:[forget_view]
     }]
   }]
 })

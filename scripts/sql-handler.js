@@ -146,6 +146,26 @@ class SQLHandler {
         })
     }
 
+    updateCheckTime(id, obj){
+        var args = [obj.time, obj.timeInfo, id]
+        this._dbQuery((db) => {
+            if(!obj.type){
+                db.update({
+                    sql:"UPDATE CheckLog SET STARTTIME = ? , STARTDATA = ? WHERE ID = ?",
+                    args:args
+                })
+            }else {
+                db.update({
+                    sql:"UPDATE CheckLog SET ENDTIME = ? , ENDDATA = ? WHERE ID = ?",
+                    args:args
+                })
+            }
+            return {
+                data_base:db,
+            }
+        })
+    }
+
     cacheInit(){
         var wtInfo ={
             worktime : 0,

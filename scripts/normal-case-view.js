@@ -55,8 +55,7 @@ var message_view = {
     make.height.equalTo(70)
   },
   props:{
-    id:"message_view",
-    bgColor:$color('clear')
+    id:"message_view"
   },
   views:[{
     type:"label",
@@ -66,7 +65,6 @@ var message_view = {
     },
     props:{
       id:"total_count_view",
-      bgColor:$color('clear'),
       text:"TotalCount: " + Math.abs(wtInfo.total),
       font:$font("ChalkboardSE-Bold",27),
       autoFontSize:true,
@@ -87,7 +85,6 @@ var message_view = {
     },
     props:{
       id:"date_info_view",
-      bgColor:$color('clear'),
       textColor:$color("#404969"),
       text:dateHandler.currentTime.dateStr + " " + tools.getWorkTimeText(wtInfo).shortWT,
       font:$font("ChalkboardSE-Regular",16),
@@ -98,10 +95,7 @@ var message_view = {
 
 var normal_case_view = {
   type:"view",
-  layout(make, view){
-    make.center.equalTo(view.super)
-    make.size.equalTo(view.super)
-  },
+  layout:$layout.fill,
   props:{
     id:"normal_case_view"
   },
