@@ -13,6 +13,7 @@ $ui.render({
     id:"main_view",
     navBarHidden:true,
     statusBarStyle:0,
+    bgcolor:$color('#ececec')
   },
   views: [{
     type: "scroll",
@@ -37,9 +38,9 @@ $ui.render({
         id:"calender",
         smoothRadius:10
       },
-      layout:function(make){
+      layout:function(make, view){
         var wid = WID * 0.8
-        make.top.equalTo($('checkbox').bottom).offset(30)
+        make.top.equalTo(view.prev.bottom).offset(30)
         make.left.inset((WID - wid) / 2)
         make.width.equalTo(wid)
         make.height.equalTo((calender.props.info.cellH * calender.props.info.lines + calender.props.info.titleH * 2 + calender.props.info.infoH))
@@ -51,14 +52,25 @@ $ui.render({
         clipsToBounds:true,
         id:"forget"
       },
-      layout:function(make){
+      layout:function(make, view){
         var wid = WID * 0.8
-        make.top.equalTo($('calender').bottom).offset(30)
+        make.top.equalTo(view.prev.bottom).offset(50)
         make.left.inset((WID - wid) / 2)
         make.width.equalTo(wid)
-        make.height.equalTo(forget_view.props.info.lines * forget_view.props.info.lineH)
+        make.height.equalTo(forget_view.props.info.lines * forget_view.props.info.lineH + 15)
       },
       views:[forget_view]
+    },{
+      type:"view",
+      props:{
+        id:"black_holder",
+        bgcolor:$color("clear")
+      },
+      layout(make, view){
+        make.width.equalTo(view.super)
+        make.height.equalTo(100)
+        make.top.equalTo(view.prev.bottom)
+      }
     }]
   }]
 })

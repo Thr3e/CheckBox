@@ -2,7 +2,9 @@ class Tools {
     constructor(){}
     //计算工时
     calWorkTime(sData, eData){
-        // if(sData, eData)
+        if(!sData || !eData){
+            return null
+        }
         var wt = 0.0
         sData = this._fixTimeData(sData)
         eData = this._fixTimeData(eData)
@@ -22,13 +24,13 @@ class Tools {
     }
 
     getWorkTimeText(wtObj){
-        var tab = "    "
+        var tab = "  "
         return {
             workTime:wtObj.worktime,
-            labelText:tab + "打卡时间 : " + (wtObj.starttime?wtObj.starttime:"未打卡") + " - " + (wtObj.endtime?wtObj.endtime:"未打卡") + '\n' + tab + "当日工时 : " + (wtObj.worktime || wtObj.worktime === 0?(wtObj.worktime).toFixed(2):"暂未完成打卡"),
+            labelText:tab + "check time : " + (wtObj.starttime?wtObj.starttime:"Uncheck") + " - " + (wtObj.endtime?wtObj.endtime:"Uncheck") + '\n' + tab + "work time : " + (wtObj.worktime || wtObj.worktime === 0?(wtObj.worktime).toFixed(2):"Haven't finish check"),
             shortWT:"check: " + (wtObj.starttime?wtObj.starttime:"Null") + " - " + (wtObj.endtime?wtObj.endtime:"Null"),
             timeStr: parseInt(Math.abs(wtObj.total * 60)) + "min",
-            aveDayStr:"\n    日均工时 : " + (wtObj.aveDay && wtObj.aveDay !== "NaN"?wtObj.aveDay:"0")
+            aveDayStr:'\n' + tab + "month avg time : " + (wtObj.aveDay && wtObj.aveDay !== "NaN"?wtObj.aveDay:"0")
         }
     }
 

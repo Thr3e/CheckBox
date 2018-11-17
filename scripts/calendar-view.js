@@ -21,7 +21,7 @@ var calender_time_view = {
         props:{
             id:"calender_month_view",
             text:$consts.monthList[$cache.get("selectDay").month - 1],
-            font:$font(20),
+            font:$font("ChalkboardSE-Bold",20),
             align:$align.center,
             textColor:$color($consts.colorList.light)
         },
@@ -34,12 +34,12 @@ var calender_time_view = {
         props:{
             id:"calender_year_view",
             text:`${$cache.get("selectDay").year}`,
-            font:$font(10),
+            font:$font("ChalkboardSE-Regular",10),
             align:$align.center,
             textColor:$color($consts.colorList.light)
         },
-        layout(make){
-            make.top.equalTo($("calender_month_view").bottom)
+        layout(make, view){
+            make.top.equalTo(view.prev.bottom)
             make.left.right.equalTo(0)
             make.height.equalTo(12)
         }
@@ -87,7 +87,7 @@ var calender_title_view = {
             props: {
                 id: "tile",
                 align: $align.center,
-                font: $font(18)
+                font:$font("ChalkboardSE-Bold",18),
             },
             layout: $layout.fill
         }],
@@ -101,9 +101,9 @@ var calender_title_view = {
             }
         }),
     },
-    layout: function(make){
+    layout: function(make, view){
         make.left.right.equalTo(0)
-        make.top.equalTo($('calender_time_view').bottom)
+        make.top.equalTo(view.prev.bottom)
         make.height.equalTo(titleH)
     }
 }
@@ -123,7 +123,7 @@ var calender_body_view = {
             props: {
                 id: "cell",
                 align: $align.center,
-                font: $font(20)
+                font: $font("ChalkboardSE-Regular",20)
             },
             layout(make){
                 make.top.left.right.equalTo(0)
@@ -134,19 +134,19 @@ var calender_body_view = {
             props: {
                 id: "work_time",
                 align: $align.center,
-                font: $font(12)
+                font: $font("ChalkboardSE-Regular",12)
             },
-            layout(make){
-                make.top.equalTo($('cell').bottom)
+            layout(make, view){
+                make.top.equalTo(view.prev.bottom)
                 make.right.left.equalTo(0)
                 make.height.equalTo(19)
             }
         }],
         data:tools.getDaySource(),
     },
-    layout: function(make){
+    layout: function(make, view){
         make.left.right.equalTo(0)
-        make.top.equalTo($("calender_title_view").bottom)
+        make.top.equalTo(view.prev.bottom)
         make.height.equalTo(46 * dateHandler.getDayList($cache.get("selectDay")).length / 7)
     },
     events:{
@@ -172,13 +172,13 @@ var calender_info_view = {
     props:{
         id:"calender_info_view",
         text:tools.getWorkTimeText(wtInfo).labelText + tools.getWorkTimeText(wtInfo).aveDayStr,
-        font:$font(16),
+        font:$font("ChalkboardSE-Bold",16),
         textColor:$color($consts.colorList.light),
         align:$align.left,
         lines:3
     },
-    layout(make){
-        make.top.equalTo($('calender_body_view').bottom)
+    layout(make, view){
+        make.top.equalTo(view.prev.bottom)
         make.left.right.equalTo(0)
         make.height.equalTo(infoH)
     }

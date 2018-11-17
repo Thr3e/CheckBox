@@ -15,7 +15,8 @@ var checkin_btn_view = {
   props: {
     id: "checkin_btn",
     title: "Check",
-    font:$font("ChalkboardSE-Bold",18)
+    font:$font("ChalkboardSE-Bold",18),
+    bgcolor:$color($consts.colorList["basic"])
   },
   layout: function(make, view) {
     make.centerY.equalTo(view.super)
@@ -28,7 +29,7 @@ var checkin_btn_view = {
       var curDate = dateHandler.currentTime
       var isChecked = sqlHandler.verifyData(curDate.date)
       if(!isChecked) sqlHandler.createNewLine(curDate)
-      sqlHandler.updateData(!isChecked, curDate, curDate.date)
+      sqlHandler.updateData(isChecked, curDate, curDate.date)
       if(isChecked) {
         var timeData = sqlHandler.getTimeData(curDate.date)
         var workTime = tools.calWorkTime(timeData.STARTDATA, timeData.ENDDATA)
@@ -78,14 +79,14 @@ var message_view = {
     }
   },{
     type:"label",
-    layout(make){
+    layout(make, view){
       make.left.right.equalTo(0)
       make.height.equalTo(20)
-      make.top.equalTo($("total_count_view").bottom)
+      make.top.equalTo(view.prev.bottom)
     },
     props:{
       id:"date_info_view",
-      textColor:$color("#404969"),
+      textColor:$color($consts.colorList["basic"]),
       text:dateHandler.currentTime.dateStr + " " + tools.getWorkTimeText(wtInfo).shortWT,
       font:$font("ChalkboardSE-Regular",16),
       autoFontSize:true

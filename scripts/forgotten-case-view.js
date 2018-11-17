@@ -12,34 +12,72 @@ var title_view = {
     type:"label",
     props:{
         id:"forgotten-title-view",
-        text:"补打卡",
-        textColor:$color("#404969"),
+        text:"Supplement Check",
+        textColor:$color($consts.colorList["basic"]),
+        font:$font("ChalkboardSE-Bold",18)
     },
     layout(make, view){
         make.width.equalTo(view.super)
-        make.top.left.inset(0)
+        make.top.equalTo(0)
+        make.left.inset(10)
         make.height.equalTo(lineH)
     }
 }
 
 var date_input_view = {
-    type:"label",
+    type:"view",
     props:{
-        id:"forgotten-date-select-view",
-        text:"请选择日期",
-        textColor:$color("#404969"),
+        id:"date-input-view"
     },
+    views:[{
+        type:"button",
+        props:{
+            id:"date-icon",
+            icon:$icon("125",$color($consts.colorList["basic"]), $size(20, 20)),
+            bgcolor:$color("clear")
+        },
+        layout(make){
+            make.size.equalTo($size(lineH, lineH))
+            make.left.equalTo(0)
+        }
+    },{
+        type:"label",
+        props:{
+            id:"forgotten-date-select-view",
+            text:"Select the Day",
+            textColor:$color($consts.colorList["basic"]),
+            font:$font("ChalkboardSE-Regular",18)
+        },
+        layout(make, view){
+            make.height.equalTo(view.super)
+            make.right.equalTo(0)
+            make.left.equalTo($('date-icon').right)
+        }
+    },{
+        type:"view",
+        props:{
+            id:"cut-off-lin",
+            bgcolor:$color($consts.colorList["basic"]),
+            radius:1,
+        },
+        layout(make, view){
+            make.height.equalTo(2)
+            make.top.equalTo(view.prev.bottom)
+            make.left.inset(10)
+            make.right.inset(33)
+        }
+    }],
     layout(make, view){
         make.width.equalTo(view.super)
-        make.top.equalTo($("forgotten-title-view").bottom)
-        make.left.inset(0)
+        make.top.equalTo(view.prev.bottom)
+        make.left.inset(10)
         make.height.equalTo(lineH)
     },
     events:{
         tapped: function(sender){
             tools.datePicker(1, "",
                 function(date){
-                    sender.text = date[3] + "/" + $consts.sortMonthObj[date[1]] + '/' + date[2]
+                    $('forgotten-date-select-view').text = date[3] + "/" + $consts.sortMonthObj[date[1]] + '/' + date[2]
                 }
             )
         }
@@ -47,23 +85,59 @@ var date_input_view = {
 }
 
 var time_input_view = {
-    type:"label",
+    type:"view",
     props:{
-        id:"forgotten-time-select-view",
-        text:"请选择时间",
-        textColor:$color("#404969"),
+        id:"time-input-view"
     },
+    views:[{
+        type:"button",
+        props:{
+            id:"time-icon",
+            icon:$icon("099",$color($consts.colorList["basic"]), $size(20, 20)),
+            bgcolor:$color("clear")
+        },
+        layout(make){
+            make.size.equalTo($size(lineH, lineH))
+            make.left.equalTo(0)
+        }
+    },{
+        type:"label",
+        props:{
+            id:"forgotten-time-select-view",
+            text:"Select the Day",
+            textColor:$color($consts.colorList["basic"]),
+            font:$font("ChalkboardSE-Regular",18)
+        },
+        layout(make, view){
+            make.height.equalTo(view.super)
+            make.right.equalTo(0)
+            make.left.equalTo($('time-icon').right)
+        }
+    },{
+        type:"view",
+        props:{
+            id:"cut-off-lin",
+            bgcolor:$color($consts.colorList["basic"]),
+            radius:1,
+        },
+        layout(make, view){
+            make.height.equalTo(2)
+            make.top.equalTo(view.prev.bottom)
+            make.left.inset(10)
+            make.right.inset(33)
+        }
+    }],
     layout(make, view){
         make.width.equalTo(view.super)
-        make.top.equalTo($("forgotten-date-select-view").bottom)
-        make.left.inset(0)
+        make.top.equalTo(view.prev.bottom)
+        make.left.inset(10)
         make.height.equalTo(lineH)
     },
     events:{
         tapped: function(sender){
             tools.datePicker(0, "",
                 function(date){
-                    sender.text = date[4].slice(0,5)
+                    $("forgotten-time-select-view").text = date[4].slice(0,5)
                 }
             )
         }
@@ -81,7 +155,7 @@ var check_view = {
             id:"forgotten-check-type-tab",
             items:['check-in', 'check-out'],
             index:0,
-            tintColor:$color("#404969"),
+            tintColor:$color($consts.colorList["basic"])
         },
         layout(make, view){
             make.size.equalTo($size(150, lineH * 0.8))
@@ -94,7 +168,8 @@ var check_view = {
             id: "forgotten-checkin-btn",
             title: "Check",
             font: $font("ChalkboardSE-Bold",18),
-            textColor: $color('#404969')
+            textColor: $color($consts.colorList["basic"]),
+            bgcolor:$color($consts.colorList["basic"])
         },
         layout: function(make, view) {
             make.centerY.equalTo(view.super)
@@ -103,38 +178,40 @@ var check_view = {
         },
         events:{
             tapped(sender){
-                if($('forgotten-date-select-view').text.indexOf("请选择") !== -1 || $('forgotten-time-select-view').text.indexOf("请选择") !== -1){
-                    $ui.alert("请输入打卡日期或时间")
+                if($('forgotten-date-select-view').text.indexOf("Select") !== -1 || $('forgotten-time-select-view').text.indexOf("Select") !== -1){
+                    $ui.alert("请先选择日期和时间!")
                     return
                 }
                 var checkInfo = {}
                 var dateInfo = $('forgotten-date-select-view').text.split('/')
                 var timeInfo = $('forgotten-time-select-view').text.split(':')
                 var type = $('forgotten-check-type-tab').index
-                checkInfo.year = dateInfo[0]
-                checkInfo.month = dateInfo[1]
-                checkInfo.day = dateInfo[2]
+                checkInfo.year = parseInt(dateInfo[0])
+                checkInfo.month = parseInt(dateInfo[1])
+                checkInfo.day = parseInt(dateInfo[2])
                 checkInfo.date = dateInfo.join('') * 1
                 checkInfo.time = timeInfo.join(':')
-                checkInfo.timeInfo = parseInt(timeInfo[0]) + parseFloat((timeInfo[1] / 60).toFixed(2))
-                checkInfo.type = type
-                sqlHandler.updateCheckTime(checkInfo.date, checkInfo)
+                checkInfo.timeData = parseInt(timeInfo[0]) + parseFloat((timeInfo[1] / 60).toFixed(2))
+                if (!sqlHandler.verifyData(checkInfo.date)) {
+                    sqlHandler.createNewLine(checkInfo)
+                }
+                sqlHandler.updateData(type, checkInfo, checkInfo.date)
                 var timeData = sqlHandler.getTimeData(checkInfo.date)
                 var workTime = tools.calWorkTime(timeData.STARTDATA, timeData.ENDDATA)
-                sqlHandler.setWorkTime(workTime.toFixed(2), checkInfo.date)
+                sqlHandler.setWorkTime(workTime ? workTime.toFixed(2) : workTime, checkInfo.date)
                 tools.updateCache(
                     checkInfo, 
                     dateHandler.getDayList(checkInfo), 
                     Object.assign(sqlHandler.getWorkTime(checkInfo.date), sqlHandler.getTotalTime(checkInfo))
                 )
-                var type = $cache.get("curDay").date === checkInfo.date ? "check" : Math.abs(parseInt($cache.get("curDay").date / 100) - parseInt(checkInfo.date / 100)) < 1 ? "curCheck" : "reCheck"
-                tools.reloadView(type)
+                var reloadType = $cache.get("curDay").date === checkInfo.date ? "check" : Math.abs(parseInt($cache.get("curDay").date / 100) - parseInt(checkInfo.date / 100)) < 1 ? "curCheck" : "reCheck"
+                tools.reloadView(reloadType)
             }
         }
     }],
     layout(make, view){
         make.width.equalTo(view.super)
-        make.top.equalTo($("forgotten-time-select-view").bottom)
+        make.top.equalTo(view.prev.bottom).offset(5)
         make.left.inset(0)
         make.height.equalTo(lineH)
     }
@@ -144,7 +221,8 @@ var forgotten_view = {
     type:"view",
     props:{
         id:'forgotten_view',
-        borderWidth:1,
+        borderWidth:2,
+        borderColor:$color($consts.colorList["basic"]),
         radius:10,
         info:{
             lines:4,

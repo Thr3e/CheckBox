@@ -48,21 +48,22 @@ class SQLHandler {
     
     updateData(checkType, timeObj, id){
         var args = [timeObj.time, (timeObj.timeData).toFixed(2), id]
-        var db   = $sqlite.open("baseDB.db")
         //checkType == true : 上班打卡; false : 下班打卡
-        if(checkType){
-        db.update({
-            sql:"UPDATE CheckLog SET STARTTIME = ?, STARTDATA = ? WHERE ID = ?",
-            args: args
+        this._dbQuery(db => {
+            if(checkType){
+                db.update({
+                    sql:"UPDATE CheckLog SET ENDTIME = ?, ENDDATA = ? WHERE ID = ?",
+                    args: args
+                })
+            }else{
+                db.update({
+                    sql:"UPDATE CheckLog SET STARTTIME = ?, STARTDATA = ? WHERE ID = ?",
+                    args: args
+                })
+            }
+            $ui.toast("打卡成功")
+            return {data_base: db}
         })
-        }else{
-        db.update({
-            sql:"UPDATE CheckLog SET ENDTIME = ?, ENDDATA = ? WHERE ID = ?",
-            args: args
-        })
-        }
-        db.close()
-        $ui.toast("打卡成功")
     }
     
     cleanData(id){
@@ -142,26 +143,6 @@ class SQLHandler {
                 wtList:list,
                 aveDay : (total / dayCount).toFixed(2),
                 dayCount: dayCount
-            }
-        })
-    }
-
-    updateCheckTime(id, obj){
-        var args = [obj.time, obj.timeInfo, id]
-        this._dbQuery((db) => {
-            if(!obj.type){
-                db.update({
-                    sql:"UPDATE CheckLog SET STARTTIME = ? , STARTDATA = ? WHERE ID = ?",
-                    args:args
-                })
-            }else {
-                db.update({
-                    sql:"UPDATE CheckLog SET ENDTIME = ? , ENDDATA = ? WHERE ID = ?",
-                    args:args
-                })
-            }
-            return {
-                data_base:db,
             }
         })
     }

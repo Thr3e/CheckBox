@@ -6,7 +6,8 @@
         "week"    :"#1989ac",
         "passed"  :"#57a99a",
         "positive":"#0c907d",
-        "negative":"#db3951"
+        "negative":"#db3951",
+        "basic"   :"#404969"
     },
     "monthList" : ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
     "weekList"  : ["Sun","Mon","Tus","Wen","Thu","Fri","Sat"],
