@@ -103,8 +103,8 @@ class Tools {
                 $('total_count_view').textColor = $color(wtInfo.total >= 0 ?$consts.colorList.positive:$consts.colorList.negative)       
             };
             case "reCheck" : {
-                $('forgotten-date-select-view').text = "请选择日期"
-                $('forgotten-time-select-view').text = "请选择时间"
+                $('forgotten-date-select-view').text = "Select the Day"
+                $('forgotten-time-select-view').text = "Select the Time"
                 $('forgotten-check-type-tab').index = 0
             };
             case "month" : {

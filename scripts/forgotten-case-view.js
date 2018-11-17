@@ -104,7 +104,7 @@ var time_input_view = {
         type:"label",
         props:{
             id:"forgotten-time-select-view",
-            text:"Select the Day",
+            text:"Select the Time",
             textColor:$color($consts.colorList["basic"]),
             font:$font("ChalkboardSE-Regular",18)
         },

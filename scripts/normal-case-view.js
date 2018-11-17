@@ -1,8 +1,8 @@
 const DateHandler = require('./date-handler')
 const SqlHandler  = require('./sql-handler')
 const Tools       = require('./tool')
-var sqlHandler  = new SqlHandler
 var dateHandler = new DateHandler
+var sqlHandler  = new SqlHandler
 var tools       = new Tools
 var $consts = JSON.parse($file.read("assets/constant.json").string)
 
