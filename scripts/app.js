@@ -26,7 +26,7 @@ $ui.render({
       },
       layout:function(make, view){
         make.width.equalTo(view.super)
-        make.top.offset(50)
+        make.top.offset(0)
         make.left.inset(0)
         make.height.equalTo(100)
       },
