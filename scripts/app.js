@@ -29,12 +29,15 @@ $ui.render({
       type:"view",
       props:{
         clipsToBounds:true,
-        id:"checkbox"
+        id:"checkbox",
+        borderWidth:2,
+        borderColor:$color($consts.colorList.basic),
+        radius:10,
       },
       layout:function(make, view){
         make.width.equalTo(view.super)
-        make.top.inset(30)
-        make.height.equalTo(50)
+        make.top.inset(10)
+        make.height.equalTo(80)
       },
       views:[nor_view]
     },{

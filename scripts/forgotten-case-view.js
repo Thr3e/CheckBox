@@ -236,7 +236,8 @@ var check_view = {
             make.size.equalTo($size(80, lineH * 0.8))
         },
         events:{
-            tapped(sender){
+            tapped(){
+                $device.taptic(2)
                 if($('forgotten-date-select-view').text.indexOf("Select") !== -1 || $('forgotten-time-select-view').text.indexOf("Select") !== -1){
                     $ui.alert("请先选择日期和时间!")
                     return

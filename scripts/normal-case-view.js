@@ -69,7 +69,8 @@ var checkin_btn_view = {
     make.height.equalTo(42)
   },
   events: {
-    tapped:function(){
+    tapped(){
+      $device.taptic(2)
       var curDate = dateHandler.currentTime
       var isChecked = sqlHandler.verifyData(curDate.date)
       if(!isChecked) sqlHandler.createNewLine(curDate)
@@ -92,7 +93,10 @@ var checkin_btn_view = {
 }
 var normal_case_view = {
   type:"view",
-  layout:$layout.fill,
+  layout(make, view){
+    make.height.equalTo(view.super)
+    make.left.right.inset(20)
+  },
   props:{
     id:"normal_case_view",
   },
