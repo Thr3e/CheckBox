@@ -132,7 +132,7 @@ class SQLHandler {
               args:[val.year, val.month]}).result
             while(rs.next()){
                 list[rs.values.DAY] = rs.values.WORKTIME
-                if (rs.values.WORKTIME){
+                if (rs.values.WORKTIME || rs.values.WORKTIME === 0){
                     dayCount++
                     total += rs.values.WORKTIME
                 }
