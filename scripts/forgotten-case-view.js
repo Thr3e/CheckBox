@@ -62,7 +62,7 @@ var date_input_view = {
         },
         layout(make, view){
             make.height.equalTo(2)
-            make.top.equalTo(view.prev.bottom)
+            make.bottom.equalTo(view.super.bottom)
             make.left.inset(10)
             make.right.inset(33)
         }
@@ -122,7 +122,7 @@ var time_input_view = {
         },
         layout(make, view){
             make.height.equalTo(2)
-            make.top.equalTo(view.prev.bottom)
+            make.bottom.equalTo(view.super.bottom)
             make.left.inset(10)
             make.right.inset(33)
         }
