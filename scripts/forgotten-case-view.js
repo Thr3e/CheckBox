@@ -13,8 +13,8 @@ var title_view = {
     props:{
         id:"forgotten-title-view",
         text:"Supplement Check",
-        textColor:$color($consts.colorList["basic"]),
-        font:$font("ChalkboardSE-Bold",18)
+        textColor:$color($consts.colorList.basic),
+        font:$font($consts.font.bold,18)
     },
     layout(make, view){
         make.width.equalTo(view.super)
@@ -33,7 +33,7 @@ var date_input_view = {
         type:"button",
         props:{
             id:"date-icon",
-            icon:$icon("125",$color($consts.colorList["basic"]), $size(20, 20)),
+            icon:$icon("125",$color($consts.colorList.basic), $size(20, 20)),
             bgcolor:$color("clear")
         },
         layout(make){
@@ -45,8 +45,8 @@ var date_input_view = {
         props:{
             id:"forgotten-date-select-view",
             text:"Select the Day",
-            textColor:$color($consts.colorList["basic"]),
-            font:$font("ChalkboardSE-Regular",18)
+            textColor:$color($consts.colorList.basic),
+            font:$font($consts.font.regular,18)
         },
         layout(make, view){
             make.height.equalTo(view.super)
@@ -57,7 +57,7 @@ var date_input_view = {
         type:"view",
         props:{
             id:"cut-off-lin",
-            bgcolor:$color($consts.colorList["basic"]),
+            bgcolor:$color($consts.colorList.basic),
             radius:1,
         },
         layout(make, view){
@@ -76,8 +76,18 @@ var date_input_view = {
     events:{
         tapped: function(sender){
             tools.datePicker(1, "",
-                function(date){
-                    $('forgotten-date-select-view').text = date[3] + "/" + $consts.sortMonthObj[date[1]] + '/' + date[2]
+            function(date){
+                var selectDay = {
+                    year:parseInt(date[3]),
+                    month:parseInt($consts.sortMonthObj[date[1]]),
+                    day:parseInt(date[2])
+                }
+                tools.updateCache(
+                    selectDay,
+                    dateHandler.getDayList(selectDay),
+                    Object.assign(sqlHandler.getWorkTime(tools.getDateId(selectDay)), sqlHandler.getTotalTime(selectDay))
+                )
+                tools.reloadView("month")
                 }
             )
         }
@@ -93,7 +103,7 @@ var time_input_view = {
         type:"button",
         props:{
             id:"time-icon",
-            icon:$icon("099",$color($consts.colorList["basic"]), $size(20, 20)),
+            icon:$icon("099",$color($consts.colorList.basic), $size(20, 20)),
             bgcolor:$color("clear")
         },
         layout(make){
@@ -105,8 +115,8 @@ var time_input_view = {
         props:{
             id:"forgotten-time-select-view",
             text:"Select the Time",
-            textColor:$color($consts.colorList["basic"]),
-            font:$font("ChalkboardSE-Regular",18)
+            textColor:$color($consts.colorList.basic),
+            font:$font($consts.font.regular,18)
         },
         layout(make, view){
             make.height.equalTo(view.super)
@@ -117,7 +127,7 @@ var time_input_view = {
         type:"view",
         props:{
             id:"cut-off-lin",
-            bgcolor:$color($consts.colorList["basic"]),
+            bgcolor:$color($consts.colorList.basic),
             radius:1,
         },
         layout(make, view){
@@ -147,33 +157,82 @@ var time_input_view = {
 var check_view = {
     type:"view",
     props:{
-        id:"forgotten-check-view",
+        id:"forgotten-check-view"
     },
     views:[{
-        type:"tab",
+        type:"view",
         props:{
             id:"forgotten-check-type-tab",
-            items:['check-in', 'check-out'],
-            index:0,
-            tintColor:$color($consts.colorList["basic"])
+            borderWidth:1,
+            borderColor:$color($consts.colorList.basic),
+            radius:5,
         },
         layout(make, view){
             make.size.equalTo($size(150, lineH * 0.8))
-            make.left.offset(10)
+            make.left.offset(20)
             make.centerY.equalTo(view.super)
-        }
+        },
+        views:[{
+            type:"label",
+            props:{
+                text:"check-in",
+                align:$align.center,
+                font: $font($consts.font.regular,15),
+                bgcolor:$color($consts.colorList.basic),
+                textColor:$color($consts.colorList.bgcolor),
+            },
+            layout(make, view){
+                make.height.equalTo(view.super)
+                make.width.equalTo(75)
+                make.left.inset(0)
+            },
+            events:{
+                tapped(){
+                    var lightC = $color($consts.colorList.bgcolor)
+                    var darkC  = $color($consts.colorList.basic)
+                    $("forgotten-check-type-tab").views[0].bgcolor = darkC
+                    $("forgotten-check-type-tab").views[0].textColor = lightC
+                    $("forgotten-check-type-tab").views[1].bgcolor = lightC
+                    $("forgotten-check-type-tab").views[1].textColor = darkC
+                }
+            }
+        },{
+            type:"label",
+            props:{
+                text:"check-out",
+                align:$align.center,
+                font: $font($consts.font.regular,15),
+                textColor:$color($consts.colorList.basic),
+                bgcolor:$color($consts.colorList.bgcolor),
+            },
+            layout(make, view){
+                make.height.equalTo(view.super)
+                make.width.equalTo(75)
+                make.right.inset(0)
+            },
+            events:{
+                tapped(){
+                    var lightC = $color($consts.colorList.bgcolor)
+                    var darkC  = $color($consts.colorList.basic)
+                    $("forgotten-check-type-tab").views[1].bgcolor = darkC
+                    $("forgotten-check-type-tab").views[1].textColor = lightC
+                    $("forgotten-check-type-tab").views[0].bgcolor = lightC
+                    $("forgotten-check-type-tab").views[0].textColor = darkC
+                }
+            }
+        }]
     },{
         type: "button",
         props: {
             id: "forgotten-checkin-btn",
             title: "Check",
-            font: $font("ChalkboardSE-Bold",18),
-            textColor: $color($consts.colorList["basic"]),
-            bgcolor:$color($consts.colorList["basic"])
+            font: $font($consts.font.bold,18),
+            textColor: $color($consts.colorList.basic),
+            bgcolor:$color($consts.colorList.basic)
         },
         layout: function(make, view) {
             make.centerY.equalTo(view.super)
-            make.right.equalTo(-10)
+            make.right.inset(20)
             make.size.equalTo($size(80, lineH * 0.8))
         },
         events:{
@@ -185,7 +244,8 @@ var check_view = {
                 var checkInfo = {}
                 var dateInfo = $('forgotten-date-select-view').text.split('/')
                 var timeInfo = $('forgotten-time-select-view').text.split(':')
-                var type = $('forgotten-check-type-tab').index
+                var type = 
+                $("forgotten-check-type-tab").views[0].bgcolor.hexCode === $consts.colorList.basic ? 0 : 1
                 checkInfo.year = parseInt(dateInfo[0])
                 checkInfo.month = parseInt(dateInfo[1])
                 checkInfo.day = parseInt(dateInfo[2])
@@ -222,7 +282,7 @@ var forgotten_view = {
     props:{
         id:'forgotten_view',
         borderWidth:2,
-        borderColor:$color($consts.colorList["basic"]),
+        borderColor:$color($consts.colorList.basic),
         radius:10,
         info:{
             lines:4,

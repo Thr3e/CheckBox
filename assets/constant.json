@@ -7,7 +7,8 @@
         "passed"  :"#57a99a",
         "positive":"#0c907d",
         "negative":"#db3951",
-        "basic"   :"#404969"
+        "basic"   :"#404969",
+        "bgcolor" :"#ececec"
     },
     "monthList" : ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
     "weekList"  : ["Sun","Mon","Tus","Wen","Thu","Fri","Sat"],
@@ -24,5 +25,10 @@
         "Oct":"10",
         "Nov":"11",
         "Dec":"12"
+    },
+    "font":{
+        "bold":"ChalkboardSE-Bold",
+        "regular":"ChalkboardSE-Regular",
+        "light":"ChalkboardSE-light"
     }
 }

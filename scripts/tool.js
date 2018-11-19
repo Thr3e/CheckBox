@@ -93,6 +93,7 @@ class Tools {
 
     reloadView(type){
         var wtInfo = $cache.get("wtInfo")
+        var selectDay = $cache.get("selectDay")
         var $consts = JSON.parse($file.read("assets/constant.json").string)
         switch(type){
             case "check" : {
@@ -103,15 +104,18 @@ class Tools {
                 $('total_count_view').textColor = $color(wtInfo.total >= 0 ?$consts.colorList.positive:$consts.colorList.negative)       
             };
             case "reCheck" : {
-                $('forgotten-date-select-view').text = "Select the Day"
                 $('forgotten-time-select-view').text = "Select the Time"
-                $('forgotten-check-type-tab').index = 0
+                $("forgotten-check-type-tab").views[0].bgcolor = $color($consts.colorList.basic)
+                $("forgotten-check-type-tab").views[0].textColor = $color($consts.colorList.bgcolor)
+                $("forgotten-check-type-tab").views[1].bgcolor = $color($consts.colorList.bgcolor)
+                $("forgotten-check-type-tab").views[1].textColor = $color($consts.colorList.basic)
             };
             case "month" : {
-                $('calender_month_view').text = JSON.parse($file.read("assets/constant.json").string).monthList[$cache.get("selectDay").month - 1]
-                $('calender_year_view').text = $cache.get("selectDay").year + ""
+                $('calender_month_view').text = JSON.parse($file.read("assets/constant.json").string).monthList[selectDay.month - 1]
+                $('calender_year_view').text = selectDay.year + ""
             };
             default : {
+                $('forgotten-date-select-view').text = selectDay.year ? `${selectDay.year + ""}/${selectDay.month < 10 ? '0' + selectDay.month : selectDay.month + ''}/${selectDay.day < 10 ? '0' + selectDay.day : selectDay.day + ''}` : "Select the Day"
                 $("calender_body_view").data = this.getDaySource()
                 $("calender_body_view").updateLayout((make) => {
                     make.height.equalTo(parseInt(this.getDaySource().length / 7) * ($("calender_view").info.cellH - 1))

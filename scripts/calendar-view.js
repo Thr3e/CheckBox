@@ -21,7 +21,7 @@ var calender_time_view = {
         props:{
             id:"calender_month_view",
             text:$consts.monthList[$cache.get("selectDay").month - 1],
-            font:$font("ChalkboardSE-Bold",20),
+            font:$font($consts.font.bold,20),
             align:$align.center,
             textColor:$color($consts.colorList.light)
         },
@@ -34,7 +34,7 @@ var calender_time_view = {
         props:{
             id:"calender_year_view",
             text:`${$cache.get("selectDay").year}`,
-            font:$font("ChalkboardSE-Regular",10),
+            font:$font($consts.font.regular,10),
             align:$align.center,
             textColor:$color($consts.colorList.light)
         },
@@ -87,7 +87,7 @@ var calender_title_view = {
             props: {
                 id: "tile",
                 align: $align.center,
-                font:$font("ChalkboardSE-Bold",18),
+                font:$font($consts.font.bold,18),
             },
             layout: $layout.fill
         }],
@@ -123,7 +123,7 @@ var calender_body_view = {
             props: {
                 id: "cell",
                 align: $align.center,
-                font: $font("ChalkboardSE-Regular",20)
+                font: $font($consts.font.regular,20)
             },
             layout(make){
                 make.top.left.right.equalTo(0)
@@ -134,7 +134,7 @@ var calender_body_view = {
             props: {
                 id: "work_time",
                 align: $align.center,
-                font: $font("ChalkboardSE-Regular",12)
+                font: $font($consts.font.regular,12)
             },
             layout(make, view){
                 make.top.equalTo(view.prev.bottom)
@@ -154,15 +154,15 @@ var calender_body_view = {
             if(data.cell.text) { 
                 var selectDay = $cache.get("selectDay")
                 selectDay.day = parseInt(data.cell.text)
-                var id = tools.getDateId(selectDay)
+                selectDay.date = tools.getDateId(selectDay)
                 //刷新数据
                 tools.updateCache(
                     selectDay,
                     dateHandler.getDayList(selectDay),
-                    Object.assign(sqlHandler.getWorkTime(id), sqlHandler.getTotalTime(selectDay))
+                    Object.assign(sqlHandler.getWorkTime(selectDay.date), sqlHandler.getTotalTime(selectDay))
                 )
+                tools.reloadView();
             }
-            tools.reloadView();
         }
     }
 }
@@ -172,7 +172,7 @@ var calender_info_view = {
     props:{
         id:"calender_info_view",
         text:tools.getWorkTimeText(wtInfo).labelText + tools.getWorkTimeText(wtInfo).aveDayStr,
-        font:$font("ChalkboardSE-Bold",16),
+        font:$font($consts.font.bold,16),
         textColor:$color($consts.colorList.light),
         align:$align.left,
         lines:3
@@ -189,6 +189,7 @@ var calender_view = {
     props:{
         id:('calender_view'),
         bgcolor:$color($consts.colorList.dark),
+        smoothRadius:10,
         info:{
             cellH : cellH,
             titleH : titleH,
