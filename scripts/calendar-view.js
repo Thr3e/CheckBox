@@ -5,7 +5,6 @@ var sqlHandler    = new SQLHandler
 var dateHandler   = new DateHandler
 var tools         = new Tools
 var $consts       = JSON.parse($file.read("assets/constant.json").string)
-var wtInfo = $cache.get("wtInfo")
 
 var titleH = 40
 var cellH  = 47
@@ -68,6 +67,28 @@ var calender_time_view = {
                     tools.reloadView("month")
                 }
             )
+        },
+        touchesBegan:tools.touchesBegan,
+        touchesEnded(sen, loc){
+            tools.touchesEnded(sen, loc, function(data){
+                //刷新数据
+                tools.updateCache(
+                    data,
+                    dateHandler.getDayList(data),
+                    Object.assign(sqlHandler.getWorkTime(tools.getDateId(data)), sqlHandler.getTotalTime(data))
+                )
+            })
+        },
+        doubleTapped(sender){
+            let selectDay = $cache.get("curDay");
+            //刷新数据
+            tools.updateCache(
+                selectDay,
+                dateHandler.getDayList(selectDay),
+                Object.assign(sqlHandler.getWorkTime(tools.getDateId(selectDay)), sqlHandler.getTotalTime(selectDay))
+            )
+            //刷新页面
+            tools.reloadView("month")
         }
     }
 }
@@ -121,13 +142,26 @@ var calender_body_view = {
         template: [{
             type: "label",
             props: {
-                id: "cell",
+                id: "day_title",
                 align: $align.center,
                 font: $font($consts.font.regular,20)
             },
             layout(make){
                 make.top.left.right.equalTo(0)
                 make.height.equalTo(25)
+            },
+            events:{
+                longPressed:function(info){
+                    let id = info.sender.info.id;
+                    if(id != "" && sqlHandler.verifyData(id)){
+                        tools.alertDeleteWarn(function(){
+                            sqlHandler.cleanData(id);
+                            sqlHandler.cacheInit();
+                            dateHandler.cacheInit();
+                            tools.reloadView("check");
+                        });
+                    }
+                }
             }
         },{
             type: "label",
@@ -140,6 +174,19 @@ var calender_body_view = {
                 make.top.equalTo(view.prev.bottom)
                 make.right.left.equalTo(0)
                 make.height.equalTo(19)
+            },
+            events:{
+                longPressed:function(info){
+                    let id = info.sender.info.id;
+                    if(id != "" && sqlHandler.verifyData(id)){
+                        tools.alertDeleteWarn(function(){
+                            sqlHandler.cleanData(id);
+                            sqlHandler.cacheInit();
+                            dateHandler.cacheInit();
+                            tools.reloadView("check");
+                        });
+                    }
+                }
             }
         }],
         data:tools.getDaySource(),
@@ -151,9 +198,9 @@ var calender_body_view = {
     },
     events:{
         didSelect:function(sender, indexPath, data){
-            if(data.cell.text) { 
+            if(data.day_title.text) { 
                 var selectDay = $cache.get("selectDay")
-                selectDay.day = parseInt(data.cell.text)
+                selectDay.day = parseInt(data.day_title.text)
                 selectDay.date = tools.getDateId(selectDay)
                 //刷新数据
                 tools.updateCache(
@@ -163,6 +210,28 @@ var calender_body_view = {
                 )
                 tools.reloadView();
             }
+        },
+        touchesBegan:tools.touchesBegan,
+        touchesEnded(sen, loc){
+            tools.touchesEnded(sen, loc, function(data){
+                //刷新数据
+                tools.updateCache(
+                    data,
+                    dateHandler.getDayList(data),
+                    Object.assign(sqlHandler.getWorkTime(tools.getDateId(data)), sqlHandler.getTotalTime(data))
+                )
+            })
+        },
+        doubleTapped(sender){
+            let selectDay = $cache.get("curDay");
+            //刷新数据
+            tools.updateCache(
+                selectDay,
+                dateHandler.getDayList(selectDay),
+                Object.assign(sqlHandler.getWorkTime(tools.getDateId(selectDay)), sqlHandler.getTotalTime(selectDay))
+            )
+            //刷新页面
+            tools.reloadView("month")
         }
     }
 }
@@ -171,7 +240,7 @@ var calender_info_view = {
     type:"label",
     props:{
         id:"calender_info_view",
-        text:tools.getWorkTimeText(wtInfo).labelText + tools.getWorkTimeText(wtInfo).aveDayStr,
+        text:tools.getWorkTimeText($cache.get("wtInfo")).labelText + tools.getWorkTimeText($cache.get("wtInfo")).aveDayStr,
         font:$font($consts.font.bold,16),
         textColor:$color($consts.colorList.light),
         align:$align.left,

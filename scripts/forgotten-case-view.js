@@ -90,6 +90,9 @@ var date_input_view = {
                 tools.reloadView("month")
                 }
             )
+        },
+        ready:function(sender){
+            sender.views[1].text = tools.getDateString($cache.get("curDay"), '-')
         }
     }
 }
@@ -150,6 +153,9 @@ var time_input_view = {
                     $("forgotten-time-select-view").text = date[4].slice(0,5)
                 }
             )
+        },
+        ready:function(sender){
+            sender.views[1].text = $cache.get("curDay").time
         }
     }
 }
@@ -243,7 +249,7 @@ var check_view = {
                     return
                 }
                 var checkInfo = {}
-                var dateInfo = $('forgotten-date-select-view').text.split('/')
+                var dateInfo = $('forgotten-date-select-view').text.split('-')
                 var timeInfo = $('forgotten-time-select-view').text.split(':')
                 var type = 
                 $("forgotten-check-type-tab").views[0].bgcolor.hexCode === $consts.colorList.basic ? 0 : 1

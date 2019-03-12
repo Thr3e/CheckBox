@@ -41,13 +41,15 @@ class DateHandler{
         var firstDay = firstDate.getDay()
         var list = [];
         for (var i = 0; i < firstDay; i++){
-            list.push("")
+            list.push({text:"",id:""})
         }
         for (var j = 1; j <= lastDay; j++){
-            list.push("" + j)
+            list.push({
+                text:"" + j,
+                id:`${year}${month < 10 ? "0" + month.toString() : month}${j < 10 ? "0" + j.toString() : j}`})
         }
         for (var k = 6; k > lastDate; k--){
-            list.push("")
+            list.push({text:"",id:""})
         }
         return list
     }

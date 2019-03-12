@@ -5,7 +5,6 @@ var dateHandler = new DateHandler
 var sqlHandler  = new SqlHandler
 var tools       = new Tools
 var $consts = JSON.parse($file.read("assets/constant.json").string)
-var wtInfo = $cache.get("wtInfo")
 
 var message_view = {
   type:"view",
@@ -22,10 +21,10 @@ var message_view = {
     type:"label",
     props:{
       id:"total_count_view",
-      text:"TotalCount: " + Math.abs(wtInfo.total),
+      text:"TotalCount: " + Math.abs($cache.get("wtInfo").total),
       font:$font($consts.font.bold,27),
       autoFontSize:true,
-      textColor:$color(wtInfo.total >= 0 ?$consts.colorList.positive:$consts.colorList.negative)
+      textColor:$color($cache.get("wtInfo").total >= 0 ?$consts.colorList.positive:$consts.colorList.negative)
     },
     layout(make){
       make.top.left.right.equalTo(0)
@@ -47,7 +46,7 @@ var message_view = {
     props:{
       id:"date_info_view",
       textColor:$color($consts.colorList.basic),
-      text:dateHandler.currentTime.dateStr + " " + tools.getWorkTimeText(wtInfo).shortWT,
+      text:dateHandler.currentTime.dateStr + " " + tools.getWorkTimeText($cache.get("wtInfo")).shortWT,
       font:$font($consts.font.regular,16),
       autoFontSize:true
     }
