@@ -46,7 +46,7 @@ var message_view = {
     props:{
       id:"date_info_view",
       textColor:$color($consts.colorList.basic),
-      text:dateHandler.currentTime.dateStr + " " + tools.getWorkTimeText($cache.get("wtInfo")).shortWT,
+      text:tools.getDateString(dateHandler.currentTime, '-') + " " + tools.getWorkTimeText($cache.get("wtInfo")).shortWT,
       font:$font($consts.font.regular,16),
       autoFontSize:true
     }

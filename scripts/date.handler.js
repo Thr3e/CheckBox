@@ -14,10 +14,10 @@ class DateHandler{
     }
 
     cacheInit(sDay){
-        let obj = sDay ? sDay : this.currentTime
+        let timeObj = sDay ? sDay : this.currentTime
         $cache.set("curDay", this.currentTime)
-        $cache.set("selectDay", obj)
-        $cache.set("dayList", this.getDayList(obj))
+        $cache.set("selectDay", timeObj)
+        $cache.set("dayList", this.getDayList(timeObj))
     }
     
     get currentTime(){
@@ -27,8 +27,7 @@ class DateHandler{
             day      : this.day,
             date     : this.id,
             time     : this.time,
-            timeData : this.timeData,
-            dateStr  : this.dayData.join('-')
+            timeData : this.timeData
         }
     }
 

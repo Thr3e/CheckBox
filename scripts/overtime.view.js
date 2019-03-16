@@ -17,18 +17,21 @@ var overtime_btn = {
     },
     layout:$layout.fill,
     events:{
-        tapped(){
+        tapped(sender){
             let sDay = $cache.get("selectDay")
             let obj = sqlHandler.queryWorkTime(sDay.date);
             if(obj.hasData){
                 sqlHandler.updateWorkType(sDay.date, 1)
-                $("overtime_btn").hidden = true
+                sender.hidden = true
                 $("overtime_un_btn").hidden = false
                 sqlHandler.cacheInit();
                 dateHandler.cacheInit(sDay);
                 tools.reloadView("check");
             }
             
+        },
+        ready(sender){
+            sender.hidden = sqlHandler.queryWorkTime($cache.get("selectDay").date).type == 1
         }
     }
 }
@@ -54,7 +57,9 @@ var overtime_un_btn = {
                 dateHandler.cacheInit(sDay);
                 tools.reloadView("check");
             }
-            
+        },
+        ready(sender){
+            sender.hidden = sqlHandler.queryWorkTime($cache.get("selectDay").date).type == 0;
         }
     }
 }
@@ -70,11 +75,14 @@ var overtime_view = {
         overtime_btn,
         overtime_un_btn
     ],
-    layout:$layout.fill,
+    layout(make){
+      make.right.inset(-15)
+      make.bottom.inset(150)
+      make.size.equalTo($size(100,40))
+    },
     events:{
         ready(sender){
-            $console.info("21321312");
-            // sender.alpha = sqlHandler.queryWorkTime($cache.get("selectDay")).hasData ? 0.7 : 0
+            sender.alpha = sqlHandler.queryWorkTime($cache.get("selectDay").date).hasData ? 0.7 : 0
         }
     }
 }

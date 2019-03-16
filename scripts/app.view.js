@@ -72,20 +72,7 @@ $ui.render({
         make.top.equalTo(view.prev.bottom).offset(50)
       }
     }]
-
-  },{
-    type:"view",
-    props:{
-      id:"overtime",
-      bgcolor:$color("clear")
-    },
-    layout(make){
-      make.right.inset(-14)
-      make.bottom.inset(150)
-      make.size.equalTo($size(100,40))
-    },
-    views:[
-      overtime_view
-    ]
-  }]
+  },
+    overtime_view
+  ]
 })

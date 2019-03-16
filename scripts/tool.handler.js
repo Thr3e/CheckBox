@@ -107,7 +107,7 @@ class Tools {
         var $consts = JSON.parse($file.read("assets/constant.json").string)
         switch(type){
             case "check" : {
-                $('date_info_view').text = $cache.get("curDay").dateStr + " " + this.getWorkTimeText(wtInfo).shortWT
+                $('date_info_view').text = this.getDateString($cache.get("selectDay"), '-') + " " + this.getWorkTimeText(wtInfo).shortWT
             };
             case "curCheck" :{
                 $('total_count_view').text = "TotalCount: " + Math.abs(wtInfo.total)
@@ -125,6 +125,8 @@ class Tools {
                 $('calender_year_view').text = selectDay.year + ""
             };
             default : {
+                $("overtime_view").remove();
+                $("main_view").add(require('./overtime.view'));
                 $('forgotten-date-select-view').text = selectDay.year ? this.getDateString(selectDay, "-") : "Select the Day"
                 $("calender_body_view").data = this.getDaySource()
                 $("calender_body_view").updateLayout((make) => {
@@ -161,37 +163,6 @@ class Tools {
         });
     }
 
-    touchesBegan(sender, bLoc){
-        $("scroll_view").scrollEnabled = false
-        $cache.set("moveLoc", bLoc)
-    }
-
-    touchesEnded(sender, eLoc, callback){
-        $("scroll_view").scrollEnabled = true
-        var bLoc = $cache.get("moveLoc");
-        var dX = eLoc.x - bLoc.x;
-        if(Math.abs(dX) < 5) return;
-        var direction = dX < 0 ? "next" : "prev";
-        $cache.remove("moveLoc");
-        var selectDay = $cache.get("selectDay")
-        let mon = selectDay.month;
-        let year = selectDay.year;
-        mon = direction == 'prev' ? mon - 1 : mon + 1;
-        if(mon <= 0){
-            year -= 1;
-            mon += 12;
-        }else if(mon >= 13){
-            year += 1;
-            mon -= 12;
-        }
-        let day = $cache.get("curDay").month == mon ? $cache.get("curDay").day : 1;
-        selectDay.year = year;
-        selectDay.month = mon;
-        selectDay.day = day;
-        //刷新页面
-        callback(selectDay)
-        this.reloadView("month")
-    }
 }
 
 module.exports = Tools

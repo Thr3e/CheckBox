@@ -87,7 +87,7 @@ var date_input_view = {
                     dateHandler.getDayList(selectDay),
                     Object.assign(sqlHandler.getWorkTime(tools.getDateId(selectDay)), sqlHandler.getTotalTime(selectDay, 0))
                 )
-                tools.reloadView("month")
+                tools.reloadView("check")
                 }
             )
         },
@@ -271,8 +271,7 @@ var check_view = {
                     dateHandler.getDayList(checkInfo), 
                     Object.assign(sqlHandler.getWorkTime(checkInfo.date), sqlHandler.getTotalTime(checkInfo, 0))
                 )
-                var reloadType = $cache.get("curDay").date === checkInfo.date ? "check" : Math.abs(parseInt($cache.get("curDay").date / 100) - parseInt(checkInfo.date / 100)) < 1 ? "curCheck" : "reCheck"
-                tools.reloadView(reloadType)
+                tools.reloadView('check')
             }
         }
     }],
