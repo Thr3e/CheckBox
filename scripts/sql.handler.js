@@ -1,6 +1,7 @@
 class SQLHandler {
     constructor(){
-        this.cacheInit()
+        this.createNewTable();
+        this.cacheInit();
     }
 
     _dbQuery(callback){
@@ -10,18 +11,27 @@ class SQLHandler {
         if (dbObj) return dbObj
     }
 
+    //增加表字段
+    updateTableWithNewColum(){
+        this._dbQuery(db => {
+            db.update("ALTER TABLE CheckLog ADD COLUMN TYPE INTEGER DEFAULT 0")
+            return {data_base:db}
+        })
+    }
+
+    //新建表
     createNewTable(){
         this._dbQuery(function(db){
             var rs = db.query('SELECT * FROM CheckLog')
             if (rs.error){
-                db.update("CREATE TABLE CheckLog (ID INTEGER PRIMARY KEY, YEAR INTEGER, MONTH INTEGER, DAY INTEGER, STARTTIME TEXT, ENDTIME TEXT, STARTDATA REAL, ENDDATA REAL, WORKTIME REAL)")
+                db.update("CREATE TABLE CheckLog (ID INTEGER PRIMARY KEY, YEAR INTEGER, MONTH INTEGER, DAY INTEGER, STARTTIME TEXT, ENDTIME TEXT, STARTDATA REAL, ENDDATA REAL, WORKTIME REAL, TYPE INTEGER DEFAULT 0)")
             }
             return {data_base:db}
         })
     }
     
     verifyData(id){
-         return this._dbQuery(function(db){
+        return this._dbQuery(function(db){
             var rs = db.query({
                 sql:"SELECT * FROM CheckLog WHERE ID = ?",
                 args:[id]
@@ -33,13 +43,39 @@ class SQLHandler {
             }
         }).hasData
     }
+    
+    queryWorkTime(id){
+        let self = this;
+        return this._dbQuery(function(db){
+            var hasData = false;
+            var wt = 0;
+            var type = 0;
+            if(self.verifyData(id)){
+                var rs = db.query({
+                    sql:"SELECT WORKTIME,TYPE FROM CheckLog WHERE ID = ?",
+                    args:[id]
+                }).result
+                while(rs.next()){
+                    hasData = true;
+                    wt = rs.values.WORKTIME;
+                    type = rs.values.TYPE;
+                }
+            }
+            return {
+                data_base : db,
+                hasData   : hasData,
+                worktime  : wt,
+                type      : type
+            }
+        })
+    }
       
     
     createNewLine(dateObj){
-        var args = [dateObj.date, dateObj.year, dateObj.month, dateObj.day, null, null, null, null, null]
+        var args = [dateObj.date, dateObj.year, dateObj.month, dateObj.day, null, null, null, null, null, 0]
         this._dbQuery((db) => {
             db.update({
-                sql:"INSERT INTO CheckLog values(?,?,?,?,?,?,?,?,?)",
+                sql:"INSERT INTO CheckLog values (?,?,?,?,?,?,?,?,?,?)",
                 args: args
             })
             return {data_base: db}
@@ -105,7 +141,7 @@ class SQLHandler {
         return this._dbQuery((db) => {
             var wt, st, et
             var rs = db.query({
-                sql:"SELECT STARTTIME,ENDTIME,WORKTIME FROM CheckLog WHERE ID = ?",
+                sql:"SELECT STARTTIME,ENDTIME,WORKTIME,TYPE FROM CheckLog WHERE ID = ?",
                 args:[id]
             }).result
             while(rs.next()) {
@@ -122,19 +158,22 @@ class SQLHandler {
         })
     }
 
-    getTotalTime(val){
+    getTotalTime(val, type){
         return this._dbQuery((db) => {
             var total = 0
             var list = {}
             var dayCount = 0
             var rs = db.query({
-              sql:"SELECT WORKTIME,DAY FROM CheckLog WHERE YEAR = ? AND MONTH = ?",
-              args:[val.year, val.month]}).result
+              sql:"SELECT WORKTIME,DAY,TYPE FROM CheckLog WHERE YEAR = ? AND MONTH = ?",
+              args:[val.year, val.month]
+            }).result
             while(rs.next()){
                 list[rs.values.DAY] = rs.values.WORKTIME
-                if (rs.values.WORKTIME || rs.values.WORKTIME === 0){
-                    dayCount++
-                    total += rs.values.WORKTIME
+                if(rs.values.TYPE === type){
+                    if (rs.values.WORKTIME || rs.values.WORKTIME === 0){
+                        dayCount++
+                        total += rs.values.WORKTIME
+                    }
                 }
             }
             return {
@@ -159,16 +198,26 @@ class SQLHandler {
         if($cache.get("selectDay")){
             var sDay = $cache.get("selectDay")
             var id = sDay.date || sDay.year * 10000 + sDay.month * 100 + sDay.day * 1
-            wtInfo = Object.assign(this.getWorkTime(id), this.getTotalTime(sDay))
+            wtInfo = Object.assign(this.getWorkTime(id), this.getTotalTime(sDay, 0))
         }
         $cache.set("wtInfo", wtInfo)
+    }
+
+    updateWorkType(id, type){
+        this._dbQuery(db => {
+            db.update({
+                sql:"UPDATE CheckLog SET TYPE = ? WHERE ID = ?",
+                args:[type, id]
+            })
+            return {data_base:db}
+        })
     }
 
     fackData(){
         this._dbQuery((db) => {
             var arr = [
-                [20181103, 2018, 11, 3, "08:36", "18:12", 8.60, 18.20, 7.90],
-                [20181106, 2018, 11, 6, "08:54", "18:18", 8.90, 18.20, 7.70]
+                [20181103, 2018, 11, 3, "08:36", "18:12", 8.60, 18.20, 7.90, 0],
+                [20181106, 2018, 11, 6, "08:54", "18:18", 8.90, 18.20, 7.70, 0]
             ]
             for (let idx in arr){
                 var args = arr[idx]

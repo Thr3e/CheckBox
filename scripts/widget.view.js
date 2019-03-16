@@ -1,4 +1,4 @@
-var normal_view = require('./normal-case-view')
+var normal_view = require('./basic.view')
 $ui.render({
     type:"view",
     views: [

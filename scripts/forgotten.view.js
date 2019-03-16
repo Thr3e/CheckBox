@@ -1,6 +1,6 @@
-const DateHandler = require('./date-handler')
-const SQLHandler  = require('./sql-handler')
-const Tools       = require('./tool')
+const DateHandler = require('./date.handler')
+const SQLHandler  = require('./sql.handler')
+const Tools       = require('./tool.handler')
 var sqlHandler    = new SQLHandler
 var dateHandler   = new DateHandler
 var tools         = new Tools
@@ -85,7 +85,7 @@ var date_input_view = {
                 tools.updateCache(
                     selectDay,
                     dateHandler.getDayList(selectDay),
-                    Object.assign(sqlHandler.getWorkTime(tools.getDateId(selectDay)), sqlHandler.getTotalTime(selectDay))
+                    Object.assign(sqlHandler.getWorkTime(tools.getDateId(selectDay)), sqlHandler.getTotalTime(selectDay, 0))
                 )
                 tools.reloadView("month")
                 }
@@ -269,7 +269,7 @@ var check_view = {
                 tools.updateCache(
                     checkInfo, 
                     dateHandler.getDayList(checkInfo), 
-                    Object.assign(sqlHandler.getWorkTime(checkInfo.date), sqlHandler.getTotalTime(checkInfo))
+                    Object.assign(sqlHandler.getWorkTime(checkInfo.date), sqlHandler.getTotalTime(checkInfo, 0))
                 )
                 var reloadType = $cache.get("curDay").date === checkInfo.date ? "check" : Math.abs(parseInt($cache.get("curDay").date / 100) - parseInt(checkInfo.date / 100)) < 1 ? "curCheck" : "reCheck"
                 tools.reloadView(reloadType)

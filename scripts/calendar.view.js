@@ -1,6 +1,6 @@
-const DateHandler = require('./date-handler')
-const SQLHandler  = require('./sql-handler')
-const Tools       = require('./tool')
+const DateHandler = require('./date.handler')
+const SQLHandler  = require('./sql.handler')
+const Tools       = require('./tool.handler')
 var sqlHandler    = new SQLHandler
 var dateHandler   = new DateHandler
 var tools         = new Tools
@@ -61,7 +61,7 @@ var calender_time_view = {
                     tools.updateCache(
                         selectDay,
                         dateHandler.getDayList(selectDay),
-                        Object.assign(sqlHandler.getWorkTime(id), sqlHandler.getTotalTime(selectDay))
+                        Object.assign(sqlHandler.getWorkTime(id), sqlHandler.getTotalTime(selectDay, 0))
                     )
                     //刷新页面
                     tools.reloadView("month")
@@ -75,7 +75,7 @@ var calender_time_view = {
                 tools.updateCache(
                     data,
                     dateHandler.getDayList(data),
-                    Object.assign(sqlHandler.getWorkTime(tools.getDateId(data)), sqlHandler.getTotalTime(data))
+                    Object.assign(sqlHandler.getWorkTime(tools.getDateId(data)), sqlHandler.getTotalTime(data, 0))
                 )
             })
         },
@@ -85,7 +85,7 @@ var calender_time_view = {
             tools.updateCache(
                 selectDay,
                 dateHandler.getDayList(selectDay),
-                Object.assign(sqlHandler.getWorkTime(tools.getDateId(selectDay)), sqlHandler.getTotalTime(selectDay))
+                Object.assign(sqlHandler.getWorkTime(tools.getDateId(selectDay)), sqlHandler.getTotalTime(selectDay, 0))
             )
             //刷新页面
             tools.reloadView("month")
@@ -157,7 +157,7 @@ var calender_body_view = {
                         tools.alertDeleteWarn(function(){
                             sqlHandler.cleanData(id);
                             sqlHandler.cacheInit();
-                            dateHandler.cacheInit();
+                            dateHandler.cacheInit($cache.get("selectDay"));
                             tools.reloadView("check");
                         });
                     }
@@ -206,32 +206,32 @@ var calender_body_view = {
                 tools.updateCache(
                     selectDay,
                     dateHandler.getDayList(selectDay),
-                    Object.assign(sqlHandler.getWorkTime(selectDay.date), sqlHandler.getTotalTime(selectDay))
+                    Object.assign(sqlHandler.getWorkTime(selectDay.date), sqlHandler.getTotalTime(selectDay, 0))
                 )
                 tools.reloadView();
             }
-        },
-        touchesBegan:tools.touchesBegan,
-        touchesEnded(sen, loc){
-            tools.touchesEnded(sen, loc, function(data){
-                //刷新数据
-                tools.updateCache(
-                    data,
-                    dateHandler.getDayList(data),
-                    Object.assign(sqlHandler.getWorkTime(tools.getDateId(data)), sqlHandler.getTotalTime(data))
-                )
-            })
-        },
-        doubleTapped(sender){
-            let selectDay = $cache.get("curDay");
-            //刷新数据
-            tools.updateCache(
-                selectDay,
-                dateHandler.getDayList(selectDay),
-                Object.assign(sqlHandler.getWorkTime(tools.getDateId(selectDay)), sqlHandler.getTotalTime(selectDay))
-            )
-            //刷新页面
-            tools.reloadView("month")
+            if(data.work_time.text){
+                let workTypeObj = sqlHandler.queryWorkTime(data.work_time.info.id);
+                if(workTypeObj.hasData){
+                    $("overtime_btn").hidden = workTypeObj.type == 0 ? false : true
+                    $("overtime_un_btn").hidden = workTypeObj.type == 1 ? false : true
+                }
+                if($("overtime_view").alpha == 0){
+                    $ui.animate({
+                        duration: 0.5,
+                        animation: function() {
+                            $("overtime_view").alpha = 0.7
+                        },
+                    });
+                }
+            }else if(!data.work_time.text && $("overtime_view").alpha != 0){
+                $ui.animate({
+                    duration: 0.5,
+                    animation: function() {
+                        $("overtime_view").alpha = 0.0
+                    },
+                });
+            }
         }
     }
 }

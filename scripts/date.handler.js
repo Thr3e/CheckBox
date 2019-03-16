@@ -13,10 +13,11 @@ class DateHandler{
         this.cacheInit()
     }
 
-    cacheInit(){
+    cacheInit(sDay){
+        let obj = sDay ? sDay : this.currentTime
         $cache.set("curDay", this.currentTime)
-        $cache.set("selectDay", this.currentTime)
-        $cache.set("dayList", this.getDayList(this.currentTime))
+        $cache.set("selectDay", obj)
+        $cache.set("dayList", this.getDayList(obj))
     }
     
     get currentTime(){

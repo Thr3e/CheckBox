@@ -1,6 +1,3 @@
-var SQLHandler = require('scripts/sql-handler')
-var sqlH = new SQLHandler
-sqlH.createNewTable()
 $cache.clear()
-if ($app.env == $env.today) require('scripts/widget')
-else if ($app.env == $env.app) require('scripts/app')
+if ($app.env == $env.today) require('scripts/widget.view')
+else if ($app.env == $env.app) require('scripts/app.view')

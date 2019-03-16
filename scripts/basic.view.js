@@ -1,6 +1,6 @@
-const DateHandler = require('./date-handler')
-const SqlHandler  = require('./sql-handler')
-const Tools       = require('./tool')
+const DateHandler = require('./date.handler')
+const SqlHandler  = require('./sql.handler')
+const Tools       = require('./tool.handler')
 var dateHandler = new DateHandler
 var sqlHandler  = new SqlHandler
 var tools       = new Tools
@@ -83,7 +83,7 @@ var checkin_btn_view = {
       tools.updateCache(
           curDate,
           dateHandler.getDayList(curDate),
-          Object.assign(sqlHandler.getWorkTime(curDate.date), sqlHandler.getTotalTime(curDate))
+          Object.assign(sqlHandler.getWorkTime(curDate.date), sqlHandler.getTotalTime(curDate, 0))
       )
       //刷新页面
       tools.reloadView("check")

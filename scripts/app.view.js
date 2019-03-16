@@ -1,13 +1,8 @@
-const nor_view  = require('./normal-case-view')
-const calender  = require('./calendar-view')
-const forget_view = require('./forgotten-case-view')
-const DateHandler = require('./date-handler')
-const SQLHandler  = require('./sql-handler')
-const Tools       = require('./tool')
+const nor_view    = require('./basic.view')
+const calender    = require('./calendar.view')
+const forget_view = require('./forgotten.view')
+const overtime_view = require('./overtime.view')
 var $consts       = JSON.parse($file.read("assets/constant.json").string)
-new DateHandler
-new SQLHandler
-new Tools
 $ui.render({
   props:{
     id:"main_view",
@@ -77,5 +72,20 @@ $ui.render({
         make.top.equalTo(view.prev.bottom).offset(50)
       }
     }]
+
+  },{
+    type:"view",
+    props:{
+      id:"overtime",
+      bgcolor:$color("clear")
+    },
+    layout(make){
+      make.right.inset(-14)
+      make.bottom.inset(150)
+      make.size.equalTo($size(100,40))
+    },
+    views:[
+      overtime_view
+    ]
   }]
 })
