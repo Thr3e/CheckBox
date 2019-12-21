@@ -30,7 +30,8 @@ class Tools {
             labelText:tab + "check time : " + (wtObj.starttime?wtObj.starttime:"Uncheck") + " - " + (wtObj.endtime?wtObj.endtime:"Uncheck") + '\n' + tab + "work time : " + (wtObj.worktime || wtObj.worktime === 0?(wtObj.worktime).toFixed(2):"Haven't finish check"),
             shortWT:"check: " + (wtObj.starttime?wtObj.starttime:"Null") + " - " + (wtObj.endtime?wtObj.endtime:"Null"),
             timeStr: parseInt(Math.abs(wtObj.total * 60)) + "min",
-            aveDayStr:'\n' + tab + "month avg time : " + (wtObj.aveDay && wtObj.aveDay !== "NaN"?wtObj.aveDay:"0")
+            aveDayStr:'\n' + tab + "month avg time : " + (wtObj.aveDay && wtObj.aveDay !== "NaN"?wtObj.aveDay:"0"),
+            monthTotalStr:'\n' + tab + "month total time : " + (wtObj.monthTotal && wtObj.monthTotal !== "NaN"?wtObj.monthTotal:"0")
         }
     }
 
@@ -103,15 +104,16 @@ class Tools {
 
     reloadView(type){
         var wtInfo = $cache.get("wtInfo")
+        var weekInfo = $cache.get("weekInfo")
         var selectDay = $cache.get("selectDay")
         var $consts = JSON.parse($file.read("assets/constant.json").string)
         switch(type){
             case "check" : {
-                $('date_info_view').text = $cache.get("curDay").dateStr + " " + this.getWorkTimeText(wtInfo).shortWT
+                $('date_info_view').text = this.getDateString($cache.get("selectDay"), '-') + " " + this.getWorkTimeText(wtInfo).shortWT
             };
             case "curCheck" :{
-                $('total_count_view').text = "TotalCount: " + Math.abs(wtInfo.total)
-                $('total_count_view').textColor = $color(wtInfo.total >= 0 ?$consts.colorList.positive:$consts.colorList.negative)       
+                $('total_count_view').text = "CountDown: " + Math.abs(weekInfo.aveDay)
+                $('total_count_view').textColor = $color(weekInfo.aveDay >= 0 ?$consts.colorList.positive:$consts.colorList.negative)       
             };
             case "reCheck" : {
                 $('forgotten-time-select-view').text = "Select the Time"
@@ -125,6 +127,8 @@ class Tools {
                 $('calender_year_view').text = selectDay.year + ""
             };
             default : {
+                $("overtime_view").remove();
+                $("main_view").add(require('./overtime.view'));
                 $('forgotten-date-select-view').text = selectDay.year ? this.getDateString(selectDay, "-") : "Select the Day"
                 $("calender_body_view").data = this.getDaySource()
                 $("calender_body_view").updateLayout((make) => {
@@ -133,15 +137,23 @@ class Tools {
                 $("calender").updateLayout((make) => {
                     make.height.equalTo(parseInt(this.getDaySource().length / 7) * $("calender_view").info.cellH + $("calender_view").info.titleH * 2 + $("calender_view").info.infoH)
                 })
-                $('calender_info_view').text = this.getWorkTimeText(wtInfo).labelText + this.getWorkTimeText(wtInfo).aveDayStr
+                $('calender_info_view').text = this.getWorkTimeText(wtInfo).labelText + this.getWorkTimeText(wtInfo).monthTotalStr
             }
         }
     }
 
-    updateCache(sDay,dayList,wtInfo){
+    updateCache(sDay,dayList,wtInfo,weekInfo){
         if (sDay) $cache.set("selectDay", sDay)
         if (dayList) $cache.set("dayList", dayList)
         if (wtInfo) $cache.set("wtInfo", wtInfo)
+        if (weekInfo) $cache.set("weekInfo", weekInfo)
+    }
+
+    getWeekDay(dayObj){
+        if(dayObj.year && dayObj.month && dayObj.day){
+            return new Date(dayObj.year, dayObj.month - 1, dayObj.day).getDay()
+        }
+        return 0
     }
 
     alertDeleteWarn(callback){
@@ -161,37 +173,6 @@ class Tools {
         });
     }
 
-    touchesBegan(sender, bLoc){
-        $("scroll_view").scrollEnabled = false
-        $cache.set("moveLoc", bLoc)
-    }
-
-    touchesEnded(sender, eLoc, callback){
-        $("scroll_view").scrollEnabled = true
-        var bLoc = $cache.get("moveLoc");
-        var dX = eLoc.x - bLoc.x;
-        if(Math.abs(dX) < 5) return;
-        var direction = dX < 0 ? "next" : "prev";
-        $cache.remove("moveLoc");
-        var selectDay = $cache.get("selectDay")
-        let mon = selectDay.month;
-        let year = selectDay.year;
-        mon = direction == 'prev' ? mon - 1 : mon + 1;
-        if(mon <= 0){
-            year -= 1;
-            mon += 12;
-        }else if(mon >= 13){
-            year += 1;
-            mon -= 12;
-        }
-        let day = $cache.get("curDay").month == mon ? $cache.get("curDay").day : 1;
-        selectDay.year = year;
-        selectDay.month = mon;
-        selectDay.day = day;
-        //刷新页面
-        callback(selectDay)
-        this.reloadView("month")
-    }
 }
 
 module.exports = Tools

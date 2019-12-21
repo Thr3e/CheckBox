@@ -8,7 +8,9 @@
         "positive":"#0c907d",
         "negative":"#db3951",
         "basic"   :"#404969",
-        "bgcolor" :"#ececec"
+        "bgcolor" :"#ececec",
+        "overtime":"#ffc60b",
+        "worktime":"#1cb3c8"
     },
     "monthList" : ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
     "weekList"  : ["Sun","Mon","Tus","Wen","Thu","Fri","Sat"],
@@ -30,5 +32,14 @@
         "bold":"ChalkboardSE-Bold",
         "regular":"ChalkboardSE-Regular",
         "light":"ChalkboardSE-light"
+    },
+    "sortWeekObj":{
+        "Sun":0,
+        "Mon":1,
+        "Tue":2,
+        "Wed":3,
+        "Thu":4,
+        "Fri":5,
+        "Sat":6
     }
 }

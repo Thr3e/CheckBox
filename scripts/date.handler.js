@@ -10,13 +10,16 @@ class DateHandler{
         this.id        = this.year * 10000 + this.month * 100 + this.day * 1
         this.time      = this.date.toTimeString().slice(0,5)
         this.timeData  = parseFloat((this.hour * 1.0 + this.min/ 60).toFixed(2))
+        this.weekDay   = this.date.getDay()
         this.cacheInit()
     }
 
-    cacheInit(){
+    cacheInit(sDay){
+        let timeObj = sDay ? sDay : this.currentTime
         $cache.set("curDay", this.currentTime)
-        $cache.set("selectDay", this.currentTime)
-        $cache.set("dayList", this.getDayList(this.currentTime))
+        $cache.set("selectDay", timeObj)
+        $cache.set("dayList", this.getDayList(timeObj))
+        $cache.set("weekList", this.getWeekDayList(timeObj))
     }
     
     get currentTime(){
@@ -27,7 +30,7 @@ class DateHandler{
             date     : this.id,
             time     : this.time,
             timeData : this.timeData,
-            dateStr  : this.dayData.join('-')
+            weekDay  : this.weekDay
         }
     }
 
@@ -52,6 +55,23 @@ class DateHandler{
             list.push({text:"",id:""})
         }
         return list
+    }
+
+    getWeekDayList(val) {
+        var year = val.year
+        var month = val.month - 1
+        var day = val.day
+        var sunday = new Date(year, month, day - val.weekDay)
+        var weekList = []
+        for (var i = 0; i < 7; i++){
+            var tmpDay = new Date(year, sunday.getMonth(), sunday.getDate() + i)
+            weekList.push({
+                year:val.year,
+                month:tmpDay.getMonth() + 1,
+                day:tmpDay.getDate()
+            })
+        }
+        return weekList
     }
 }
 

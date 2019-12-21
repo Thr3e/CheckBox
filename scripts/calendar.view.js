@@ -1,6 +1,6 @@
-const DateHandler = require('./date-handler')
-const SQLHandler  = require('./sql-handler')
-const Tools       = require('./tool')
+const DateHandler = require('./date.handler')
+const SQLHandler  = require('./sql.handler')
+const Tools       = require('./tool.handler')
 var sqlHandler    = new SQLHandler
 var dateHandler   = new DateHandler
 var tools         = new Tools
@@ -54,30 +54,59 @@ var calender_time_view = {
                     var selectDay = {
                         year:date[3] * 1,
                         month:$consts.sortMonthObj[date[1]] * 1,
-                        day:date[2]
+                        day:date[2],
+                        weekDay:$consts.sortWeekObj[date[0]]
                     }
                     var id = tools.getDateId(selectDay)
                     //刷新数据
                     tools.updateCache(
                         selectDay,
                         dateHandler.getDayList(selectDay),
-                        Object.assign(sqlHandler.getWorkTime(id), sqlHandler.getTotalTime(selectDay))
+                        Object.assign(sqlHandler.getWorkTime(id), sqlHandler.getTotalTime(selectDay, 0)),
+                        sqlHandler.getWeekTime(dateHandler.getWeekDayList(selectDay))
                     )
                     //刷新页面
-                    tools.reloadView("month")
+                    tools.reloadView("check")
                 }
             )
         },
-        touchesBegan:tools.touchesBegan,
-        touchesEnded(sen, loc){
-            tools.touchesEnded(sen, loc, function(data){
-                //刷新数据
-                tools.updateCache(
-                    data,
-                    dateHandler.getDayList(data),
-                    Object.assign(sqlHandler.getWorkTime(tools.getDateId(data)), sqlHandler.getTotalTime(data))
-                )
-            })
+        touchesBegan(sender, bLoc){
+            $("scroll_view").scrollEnabled = false
+            $cache.set("moveLoc", bLoc)
+        },
+        touchesEnded(sender, eLoc, callback){
+            $("scroll_view").scrollEnabled = true
+            var bLoc = $cache.get("moveLoc");
+            var dX = eLoc.x - bLoc.x;
+            if(Math.abs(dX) < 5) return;
+            var direction = dX < 0 ? "next" : "prev";
+            $cache.remove("moveLoc");
+            var selectDay = $cache.get("selectDay")
+            let mon = selectDay.month;
+            let year = selectDay.year;
+            mon = direction == 'prev' ? mon - 1 : mon + 1;
+            if(mon <= 0){
+                year -= 1;
+                mon += 12;
+            }else if(mon >= 13){
+                year += 1;
+                mon -= 12;
+            }
+            let day = $cache.get("curDay").month == mon ? $cache.get("curDay").day : 1;
+            selectDay.year = year;
+            selectDay.month = mon;
+            selectDay.day = day;
+            selectDay.date = tools.getDateId(selectDay)
+            selectDay.dateStr = tools.getDateString(selectDay, '-')
+            selectDay.weekDay = tools.getWeekDay({year:year, month:mon, day:day})
+            //刷新页面
+            tools.updateCache(
+                selectDay,
+                dateHandler.getDayList(selectDay),
+                Object.assign(sqlHandler.getWorkTime(tools.getDateId(selectDay)), sqlHandler.getTotalTime(selectDay, 0)),
+                sqlHandler.getWeekTime(dateHandler.getWeekDayList(selectDay))
+            )
+            tools.reloadView("check")
         },
         doubleTapped(sender){
             let selectDay = $cache.get("curDay");
@@ -85,10 +114,11 @@ var calender_time_view = {
             tools.updateCache(
                 selectDay,
                 dateHandler.getDayList(selectDay),
-                Object.assign(sqlHandler.getWorkTime(tools.getDateId(selectDay)), sqlHandler.getTotalTime(selectDay))
+                Object.assign(sqlHandler.getWorkTime(tools.getDateId(selectDay)), sqlHandler.getTotalTime(selectDay, 0)),
+                sqlHandler.getWeekTime(dateHandler.getWeekDayList(selectDay))
             )
             //刷新页面
-            tools.reloadView("month")
+            tools.reloadView("check")
         }
     }
 }
@@ -157,7 +187,7 @@ var calender_body_view = {
                         tools.alertDeleteWarn(function(){
                             sqlHandler.cleanData(id);
                             sqlHandler.cacheInit();
-                            dateHandler.cacheInit();
+                            dateHandler.cacheInit($cache.get("selectDay"));
                             tools.reloadView("check");
                         });
                     }
@@ -202,36 +232,38 @@ var calender_body_view = {
                 var selectDay = $cache.get("selectDay")
                 selectDay.day = parseInt(data.day_title.text)
                 selectDay.date = tools.getDateId(selectDay)
+                selectDay.weekDay = tools.getWeekDay(selectDay)
                 //刷新数据
                 tools.updateCache(
                     selectDay,
                     dateHandler.getDayList(selectDay),
-                    Object.assign(sqlHandler.getWorkTime(selectDay.date), sqlHandler.getTotalTime(selectDay))
+                    Object.assign(sqlHandler.getWorkTime(selectDay.date), sqlHandler.getTotalTime(selectDay, 0)),
+                    sqlHandler.getWeekTime(dateHandler.getWeekDayList(selectDay))
                 )
-                tools.reloadView();
+                tools.reloadView('check');
             }
-        },
-        touchesBegan:tools.touchesBegan,
-        touchesEnded(sen, loc){
-            tools.touchesEnded(sen, loc, function(data){
-                //刷新数据
-                tools.updateCache(
-                    data,
-                    dateHandler.getDayList(data),
-                    Object.assign(sqlHandler.getWorkTime(tools.getDateId(data)), sqlHandler.getTotalTime(data))
-                )
-            })
-        },
-        doubleTapped(sender){
-            let selectDay = $cache.get("curDay");
-            //刷新数据
-            tools.updateCache(
-                selectDay,
-                dateHandler.getDayList(selectDay),
-                Object.assign(sqlHandler.getWorkTime(tools.getDateId(selectDay)), sqlHandler.getTotalTime(selectDay))
-            )
-            //刷新页面
-            tools.reloadView("month")
+            if(data.work_time.text){
+                let workTypeObj = sqlHandler.queryWorkTime(data.work_time.info.id);
+                if(workTypeObj.hasData){
+                    $("overtime_btn").hidden = workTypeObj.type == 0 ? false : true
+                    $("overtime_un_btn").hidden = workTypeObj.type == 1 ? false : true
+                }
+                if($("overtime_view").alpha == 0){
+                    $ui.animate({
+                        duration: 0.5,
+                        animation: function() {
+                            $("overtime_view").alpha = 0.7
+                        },
+                    });
+                }
+            }else if(!data.work_time.text && $("overtime_view").alpha != 0){
+                $ui.animate({
+                    duration: 0.5,
+                    animation: function() {
+                        $("overtime_view").alpha = 0.0
+                    },
+                });
+            }
         }
     }
 }
@@ -240,7 +272,7 @@ var calender_info_view = {
     type:"label",
     props:{
         id:"calender_info_view",
-        text:tools.getWorkTimeText($cache.get("wtInfo")).labelText + tools.getWorkTimeText($cache.get("wtInfo")).aveDayStr,
+        text:tools.getWorkTimeText($cache.get("wtInfo")).labelText + tools.getWorkTimeText($cache.get("wtInfo")).monthTotalStr,
         font:$font($consts.font.bold,16),
         textColor:$color($consts.colorList.light),
         align:$align.left,

@@ -1,6 +1,6 @@
-const DateHandler = require('./date-handler')
-const SQLHandler  = require('./sql-handler')
-const Tools       = require('./tool')
+const DateHandler = require('./date.handler')
+const SQLHandler  = require('./sql.handler')
+const Tools       = require('./tool.handler')
 var sqlHandler    = new SQLHandler
 var dateHandler   = new DateHandler
 var tools         = new Tools
@@ -80,14 +80,16 @@ var date_input_view = {
                 var selectDay = {
                     year:parseInt(date[3]),
                     month:parseInt($consts.sortMonthObj[date[1]]),
-                    day:parseInt(date[2])
+                    day:parseInt(date[2]),
+                    weekDay:$consts.sortWeekObj[date[0]]
                 }
                 tools.updateCache(
                     selectDay,
                     dateHandler.getDayList(selectDay),
-                    Object.assign(sqlHandler.getWorkTime(tools.getDateId(selectDay)), sqlHandler.getTotalTime(selectDay))
+                    Object.assign(sqlHandler.getWorkTime(tools.getDateId(selectDay)), sqlHandler.getTotalTime(selectDay, 0)),
+                    sqlHandler.getWeekTime(dateHandler.getWeekDayList($cache.get("selectDay")))
                 )
-                tools.reloadView("month")
+                tools.reloadView("check")
                 }
             )
         },
@@ -259,6 +261,7 @@ var check_view = {
                 checkInfo.date = dateInfo.join('') * 1
                 checkInfo.time = timeInfo.join(':')
                 checkInfo.timeData = parseInt(timeInfo[0]) + parseFloat((timeInfo[1] / 60).toFixed(2))
+                checkInfo.weekDay = tools.getWeekDay(checkInfo)
                 if (!sqlHandler.verifyData(checkInfo.date)) {
                     sqlHandler.createNewLine(checkInfo)
                 }
@@ -269,10 +272,10 @@ var check_view = {
                 tools.updateCache(
                     checkInfo, 
                     dateHandler.getDayList(checkInfo), 
-                    Object.assign(sqlHandler.getWorkTime(checkInfo.date), sqlHandler.getTotalTime(checkInfo))
+                    Object.assign(sqlHandler.getWorkTime(checkInfo.date), sqlHandler.getTotalTime(checkInfo, 0)),
+                    sqlHandler.getWeekTime(dateHandler.getWeekDayList($cache.get("selectDay")))
                 )
-                var reloadType = $cache.get("curDay").date === checkInfo.date ? "check" : Math.abs(parseInt($cache.get("curDay").date / 100) - parseInt(checkInfo.date / 100)) < 1 ? "curCheck" : "reCheck"
-                tools.reloadView(reloadType)
+                tools.reloadView('check')
             }
         }
     }],
