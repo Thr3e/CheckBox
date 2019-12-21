@@ -179,9 +179,38 @@ class SQLHandler {
             return {
                 data_base:db,
                 total:(total - dayCount * 8).toFixed(2),
+                monthTotal:total.toFixed(2),
                 wtList:list,
                 aveDay : (total / dayCount).toFixed(2),
                 dayCount: dayCount
+            }
+        })
+    }
+
+    getWeekTime(weekList) {
+        return this._dbQuery((db) => {
+            var total = 0
+            var list = {}
+            var dayCount = 0
+            weekList.forEach(val => {
+                var rs = db.query({
+                  sql:"SELECT WORKTIME,DAY,TYPE FROM CheckLog WHERE YEAR = ? AND MONTH = ? AND DAY = ?",
+                  args:[val.year, val.month, val.day]
+                }).result
+                while(rs.next()){
+                    list[rs.values.DAY] = rs.values.WORKTIME
+                    if(rs.values.TYPE === 0){
+                        if (rs.values.WORKTIME || rs.values.WORKTIME === 0){
+                            dayCount++
+                            total += rs.values.WORKTIME
+                        }
+                    }
+                }
+            })
+            return {
+                data_base:db,
+                total:total.toFixed(2),
+                aveDay:(total - dayCount * 8 - 4).toFixed(2)
             }
         })
     }
@@ -201,6 +230,14 @@ class SQLHandler {
             wtInfo = Object.assign(this.getWorkTime(id), this.getTotalTime(sDay, 0))
         }
         $cache.set("wtInfo", wtInfo)
+        var weekInfo = {
+            total:0,
+            aveDay:0
+        }
+        if($cache.get("weekList")){
+            weekInfo = this.getWeekTime($cache.get("weekList"))
+        }
+        $cache.set("weekInfo",weekInfo)
     }
 
     updateWorkType(id, type){

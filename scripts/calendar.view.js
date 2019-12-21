@@ -54,14 +54,16 @@ var calender_time_view = {
                     var selectDay = {
                         year:date[3] * 1,
                         month:$consts.sortMonthObj[date[1]] * 1,
-                        day:date[2]
+                        day:date[2],
+                        weekDay:$consts.sortWeekObj[date[0]]
                     }
                     var id = tools.getDateId(selectDay)
                     //刷新数据
                     tools.updateCache(
                         selectDay,
                         dateHandler.getDayList(selectDay),
-                        Object.assign(sqlHandler.getWorkTime(id), sqlHandler.getTotalTime(selectDay, 0))
+                        Object.assign(sqlHandler.getWorkTime(id), sqlHandler.getTotalTime(selectDay, 0)),
+                        sqlHandler.getWeekTime(dateHandler.getWeekDayList(selectDay))
                     )
                     //刷新页面
                     tools.reloadView("check")
@@ -96,11 +98,13 @@ var calender_time_view = {
             selectDay.day = day;
             selectDay.date = tools.getDateId(selectDay)
             selectDay.dateStr = tools.getDateString(selectDay, '-')
+            selectDay.weekDay = tools.getWeekDay({year:year, month:mon, day:day})
             //刷新页面
             tools.updateCache(
                 selectDay,
                 dateHandler.getDayList(selectDay),
-                Object.assign(sqlHandler.getWorkTime(tools.getDateId(selectDay)), sqlHandler.getTotalTime(selectDay, 0))
+                Object.assign(sqlHandler.getWorkTime(tools.getDateId(selectDay)), sqlHandler.getTotalTime(selectDay, 0)),
+                sqlHandler.getWeekTime(dateHandler.getWeekDayList(selectDay))
             )
             tools.reloadView("check")
         },
@@ -110,7 +114,8 @@ var calender_time_view = {
             tools.updateCache(
                 selectDay,
                 dateHandler.getDayList(selectDay),
-                Object.assign(sqlHandler.getWorkTime(tools.getDateId(selectDay)), sqlHandler.getTotalTime(selectDay, 0))
+                Object.assign(sqlHandler.getWorkTime(tools.getDateId(selectDay)), sqlHandler.getTotalTime(selectDay, 0)),
+                sqlHandler.getWeekTime(dateHandler.getWeekDayList(selectDay))
             )
             //刷新页面
             tools.reloadView("check")
@@ -227,11 +232,13 @@ var calender_body_view = {
                 var selectDay = $cache.get("selectDay")
                 selectDay.day = parseInt(data.day_title.text)
                 selectDay.date = tools.getDateId(selectDay)
+                selectDay.weekDay = tools.getWeekDay(selectDay)
                 //刷新数据
                 tools.updateCache(
                     selectDay,
                     dateHandler.getDayList(selectDay),
-                    Object.assign(sqlHandler.getWorkTime(selectDay.date), sqlHandler.getTotalTime(selectDay, 0))
+                    Object.assign(sqlHandler.getWorkTime(selectDay.date), sqlHandler.getTotalTime(selectDay, 0)),
+                    sqlHandler.getWeekTime(dateHandler.getWeekDayList(selectDay))
                 )
                 tools.reloadView('check');
             }
@@ -265,7 +272,7 @@ var calender_info_view = {
     type:"label",
     props:{
         id:"calender_info_view",
-        text:tools.getWorkTimeText($cache.get("wtInfo")).labelText + tools.getWorkTimeText($cache.get("wtInfo")).aveDayStr,
+        text:tools.getWorkTimeText($cache.get("wtInfo")).labelText + tools.getWorkTimeText($cache.get("wtInfo")).monthTotalStr,
         font:$font($consts.font.bold,16),
         textColor:$color($consts.colorList.light),
         align:$align.left,

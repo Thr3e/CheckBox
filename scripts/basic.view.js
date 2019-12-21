@@ -21,10 +21,10 @@ var message_view = {
     type:"label",
     props:{
       id:"total_count_view",
-      text:"TotalCount: " + Math.abs($cache.get("wtInfo").total),
+      text:"CountDown: " + $cache.get("weekInfo").aveDay,
       font:$font($consts.font.bold,27),
       autoFontSize:true,
-      textColor:$color($cache.get("wtInfo").total >= 0 ?$consts.colorList.positive:$consts.colorList.negative)
+      textColor:$color($cache.get("weekInfo").aveDay >= 0 ?$consts.colorList.positive:$consts.colorList.negative)
     },
     layout(make){
       make.top.left.right.equalTo(0)
@@ -32,8 +32,23 @@ var message_view = {
     },
     events:{
       tapped(sender){
-        var wtInfo = $cache.get("wtInfo")
-        sender.text = sender.text.indexOf("min") === -1 ?"TotalCount: " + tools.getWorkTimeText(wtInfo).timeStr : "TotalCount: " + Math.abs(wtInfo.total)
+        var titles = ["CountDown", "WeekTotal", "MonthAbouv", "MonthTotal"]
+        var times = [$cache.get("weekInfo").aveDay, $cache.get("weekInfo").total, $cache.get("wtInfo").total, $cache.get("wtInfo").monthTotal]
+        var colors = [$consts.colorList.positive, $consts.colorList.negative]
+        var showTitle = titles[0]
+        var showTime = times[0]
+        var titleColor = colors[0]
+        titles.forEach((t,i) => {
+          if(sender.text.indexOf(t) >= 0) {
+            var idx = (i + 1) % titles.length
+            showTitle = titles[idx]
+            showTime = Math.abs(times[idx])
+            titleColor = times[idx - idx % 2] < 0 ? colors[1] : colors [0]
+            return
+          }
+        })
+        sender.text = showTitle + ": " + showTime
+        sender.textColor = $color(titleColor)
       }
     }
   },{
@@ -83,7 +98,8 @@ var checkin_btn_view = {
       tools.updateCache(
           curDate,
           dateHandler.getDayList(curDate),
-          Object.assign(sqlHandler.getWorkTime(curDate.date), sqlHandler.getTotalTime(curDate, 0))
+          Object.assign(sqlHandler.getWorkTime(curDate.date), sqlHandler.getTotalTime(curDate, 0)),
+          sqlHandler.getWeekTime(dateHandler.getWeekDayList(curDate))
       )
       //刷新页面
       tools.reloadView("check")
