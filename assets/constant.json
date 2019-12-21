@@ -41,5 +41,7 @@
         "Thu":4,
         "Fri":5,
         "Sat":6
-    }
+    },
+    "verticalScreen":1,
+    "crossScreen":5
 }

@@ -71,11 +71,9 @@ var calender_time_view = {
             )
         },
         touchesBegan(sender, bLoc){
-            $("scroll_view").scrollEnabled = false
             $cache.set("moveLoc", bLoc)
         },
         touchesEnded(sender, eLoc, callback){
-            $("scroll_view").scrollEnabled = true
             var bLoc = $cache.get("moveLoc");
             var dX = eLoc.x - bLoc.x;
             if(Math.abs(dX) < 5) return;

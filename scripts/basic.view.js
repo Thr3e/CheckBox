@@ -21,7 +21,7 @@ var message_view = {
     type:"label",
     props:{
       id:"total_count_view",
-      text:"CountDown: " + $cache.get("weekInfo").aveDay,
+      text:"CountDown: " + Math.abs($cache.get("weekInfo").aveDay),
       font:$font($consts.font.bold,27),
       autoFontSize:true,
       textColor:$color($cache.get("weekInfo").aveDay >= 0 ?$consts.colorList.positive:$consts.colorList.negative)
