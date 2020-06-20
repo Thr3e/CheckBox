@@ -21,10 +21,10 @@ var message_view = {
     type:"label",
     props:{
       id:"total_count_view",
-      text:"CountDown: " + Math.abs($cache.get("weekInfo").aveDay),
+      text:"MonthAbouv: " + Math.abs($cache.get("wtInfo").total),
       font:$font($consts.font.bold,27),
       autoFontSize:true,
-      textColor:$color($cache.get("weekInfo").aveDay >= 0 ?$consts.colorList.positive:$consts.colorList.negative)
+      textColor:$color($cache.get("wtInfo").total >= 0 ?$consts.colorList.positive:$consts.colorList.negative)
     },
     layout(make){
       make.top.left.right.equalTo(0)
@@ -35,8 +35,8 @@ var message_view = {
         var titles = ["CountDown", "WeekTotal", "MonthAbouv", "MonthTotal"]
         var times = [$cache.get("weekInfo").aveDay, $cache.get("weekInfo").total, $cache.get("wtInfo").total, $cache.get("wtInfo").monthTotal]
         var colors = [$consts.colorList.positive, $consts.colorList.negative]
-        var showTitle = titles[0]
-        var showTime = times[0]
+        var showTitle = titles[2]
+        var showTime = times[2]
         var titleColor = colors[0]
         titles.forEach((t,i) => {
           if(sender.text.indexOf(t) >= 0) {

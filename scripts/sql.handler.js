@@ -210,7 +210,7 @@ class SQLHandler {
             return {
                 data_base:db,
                 total:total.toFixed(2),
-                aveDay:(total - dayCount * 8 - 4).toFixed(2)
+                aveDay:(total - dayCount * 8).toFixed(2)
             }
         })
     }

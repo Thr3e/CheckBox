@@ -64,9 +64,9 @@ class DateHandler{
         var sunday = new Date(year, month, day - val.weekDay)
         var weekList = []
         for (var i = 0; i < 7; i++){
-            var tmpDay = new Date(year, sunday.getMonth(), sunday.getDate() + i)
+            var tmpDay = new Date(sunday.getYear() + 1900, sunday.getMonth(), sunday.getDate() + i)
             weekList.push({
-                year:val.year,
+                year:tmpDay.getYear() + 1900,
                 month:tmpDay.getMonth() + 1,
                 day:tmpDay.getDate()
             })

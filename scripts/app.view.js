@@ -61,5 +61,10 @@ $ui.render({
     statusBarStyle:0,
     bgcolor:$color($consts.colorList.bgcolor)
   },
+  events:{
+    layoutSubViews: view => {
+      $console.info("asdasdas");
+    }
+  },
   views: [checkbox, calender, forget, overtime_view]
 })

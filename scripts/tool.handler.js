@@ -112,8 +112,8 @@ class Tools {
                 $('date_info_view').text = this.getDateString($cache.get("selectDay"), '-') + " " + this.getWorkTimeText(wtInfo).shortWT
             };
             case "curCheck" :{
-                $('total_count_view').text = "CountDown: " + Math.abs(weekInfo.aveDay)
-                $('total_count_view').textColor = $color(weekInfo.aveDay >= 0 ?$consts.colorList.positive:$consts.colorList.negative)       
+                $('total_count_view').text = "MonthAbouv: " + Math.abs(wtInfo.total)
+                $('total_count_view').textColor = $color(wtInfo.total >= 0 ?$consts.colorList.positive:$consts.colorList.negative)       
             };
             case "reCheck" : {
                 $('forgotten-time-select-view').text = "Select the Time"
