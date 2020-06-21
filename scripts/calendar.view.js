@@ -147,7 +147,11 @@ var calender_body_view = {
             props: {
                 id:"day_box"
             },
-            layout: $layout.fill,
+            layout: (make, view) => {
+                make.center.equalTo(view.super);
+                make.top.left.bottom.inset(0.5);
+                make.right.equalTo(0)
+            },
             views:[{
                 type: "label",
                 props: {
@@ -168,8 +172,8 @@ var calender_body_view = {
                 },
                 layout(make, view){
                     make.top.equalTo(view.prev.bottom)
+                    make.bottom.equalTo(view.super)
                     make.right.left.equalTo(0)
-                    make.height.equalTo(19)
                 },
             }],
             events:{
@@ -186,7 +190,8 @@ var calender_body_view = {
         data:tools.getDaySource(),
     },
     layout: function(make, view){
-        make.left.right.equalTo(0)
+        make.left.equalTo(0).inset(0.5)
+        make.right.equalTo(0).inset(1)
         make.top.equalTo(view.prev.bottom)
         make.height.equalTo(46 * dateHandler.getDayList($cache.get("selectDay")).length / 7)
     },

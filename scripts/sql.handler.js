@@ -191,7 +191,11 @@ class SQLHandler {
               args:[val.year, val.month]
             }).result
             while(rs.next()){
-                list[rs.values.DAY] = rs.values.WORKTIME
+                list[rs.values.DAY] = {
+                    wt: rs.values.WORKTIME,
+                    type: rs.values.TYPE,
+                    po: rs.values.CHANGEPO
+                }
                 if(rs.values.TYPE === type){
                     if (rs.values.WORKTIME || rs.values.WORKTIME === 0){
                         if(rs.values.CHANGEPO){

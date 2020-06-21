@@ -69,7 +69,14 @@ class Tools {
             month: selectDate.month,
         }
         return $cache.get("dayList").map((item, idx) => {
-            var bgColor = parseInt(item.text) === parseInt(selectDate.day) ? colorList.cur : colorList.light
+            var work_time = workTimeList[item.text] || {};
+            var bgColor = colorList.light;
+            if(work_time.po) {
+                bgColor = colorList.worktime
+            }
+            if(parseInt(item.text) === parseInt(selectDate.day)) {
+                bgColor = colorList.cur
+            }
             var textColor = idx % 7 === 0 || idx % 7 === 6 ? colorList.week : colorList.dark
             dateInfo.day = parseInt(item.text);
             dateInfo.date = item.id;
@@ -84,8 +91,9 @@ class Tools {
                     textColor: $color(textColor)
                 },
                 work_time:{
-                    text:`${workTimeList[item.text] || workTimeList[item.text] === 0? workTimeList[item.text].toFixed(2) : ''}`,
-                    textColor: $color(textColor)
+                    text: work_time.wt || work_time.wt === 0? work_time.wt.toFixed(2) : '',
+                    textColor: $color(textColor),
+                    bgcolor: work_time.type ? $color(colorList.overtime) : $color('clear')
                 }
             }
         })
