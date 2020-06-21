@@ -64,21 +64,28 @@ class Tools {
         var colorList = JSON.parse($file.read("assets/constant.json").string).colorList
         var selectDate = $cache.get("selectDay")
         var workTimeList = $cache.get("wtInfo").wtList
+        var dateInfo = {
+            year: selectDate.year,
+            month: selectDate.month,
+        }
         return $cache.get("dayList").map((item, idx) => {
             var bgColor = parseInt(item.text) === parseInt(selectDate.day) ? colorList.cur : colorList.light
             var textColor = idx % 7 === 0 || idx % 7 === 6 ? colorList.week : colorList.dark
+            dateInfo.day = parseInt(item.text);
+            dateInfo.date = item.id;
+            dateInfo.weekDay = this.getWeekDay(dateInfo);
             return {
+                day_box: {
+                    bgcolor:  $color(bgColor),
+                    info:JSON.parse(JSON.stringify(dateInfo))
+                },
                 day_title:{
                     text:item.text,
-                    bgcolor:  $color(bgColor),
-                    textColor: $color(textColor),
-                    info:{id:item.id}
+                    textColor: $color(textColor)
                 },
                 work_time:{
                     text:`${workTimeList[item.text] || workTimeList[item.text] === 0? workTimeList[item.text].toFixed(2) : ''}`,
-                    bgcolor:  $color(bgColor),
-                    textColor: $color(textColor),
-                    info:{id:item.id}
+                    textColor: $color(textColor)
                 }
             }
         })
@@ -127,8 +134,6 @@ class Tools {
                 $('calender_year_view').text = selectDay.year + ""
             };
             default : {
-                $("overtime_view").remove();
-                $("main_view").add(require('./overtime.view'));
                 $('forgotten-date-select-view').text = selectDay.year ? this.getDateString(selectDay, "-") : "Select the Day"
                 $("calender_body_view").data = this.getDaySource()
                 $("calender_body_view").updateLayout((make) => {
@@ -147,6 +152,8 @@ class Tools {
         if (dayList) $cache.set("dayList", dayList)
         if (wtInfo) $cache.set("wtInfo", wtInfo)
         if (weekInfo) $cache.set("weekInfo", weekInfo)
+        //刷新页面
+        this.reloadView("check")
     }
 
     getWeekDay(dayObj){

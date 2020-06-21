@@ -1,12 +1,12 @@
 const DateHandler = require('./date.handler')
 const SQLHandler  = require('./sql.handler')
 const Tools       = require('./tool.handler')
-var sqlHandler    = new SQLHandler
-var dateHandler   = new DateHandler
-var tools         = new Tools
-var $consts       = JSON.parse($file.read("assets/constant.json").string)
+const sqlHandler  = new SQLHandler
+const dateHandler = new DateHandler
+const tools       = new Tools
+const $consts     = JSON.parse($file.read("assets/constant.json").string)
 
-var lineH = 40
+const lineH = 40
 
 var title_view = {
     type:"label",
@@ -76,20 +76,19 @@ var date_input_view = {
     events:{
         tapped: function(sender){
             tools.datePicker(1, "",
-            function(date){
-                var selectDay = {
-                    year:parseInt(date[3]),
-                    month:parseInt($consts.sortMonthObj[date[1]]),
-                    day:parseInt(date[2]),
-                    weekDay:$consts.sortWeekObj[date[0]]
-                }
-                tools.updateCache(
-                    selectDay,
-                    dateHandler.getDayList(selectDay),
-                    Object.assign(sqlHandler.getWorkTime(tools.getDateId(selectDay)), sqlHandler.getTotalTime(selectDay, 0)),
-                    sqlHandler.getWeekTime(dateHandler.getWeekDayList($cache.get("selectDay")))
-                )
-                tools.reloadView("check")
+                function(date){
+                    var selectDay = {
+                        year:parseInt(date[3]),
+                        month:parseInt($consts.sortMonthObj[date[1]]),
+                        day:parseInt(date[2]),
+                        weekDay:$consts.sortWeekObj[date[0]]
+                    }
+                    tools.updateCache(
+                        selectDay,
+                        dateHandler.getDayList(selectDay),
+                        Object.assign(sqlHandler.getWorkTime(tools.getDateId(selectDay)), sqlHandler.getTotalTime(selectDay, 0)),
+                        sqlHandler.getWeekTime(dateHandler.getWeekDayList($cache.get("selectDay")))
+                    )
                 }
             )
         },
@@ -275,7 +274,6 @@ var check_view = {
                     Object.assign(sqlHandler.getWorkTime(checkInfo.date), sqlHandler.getTotalTime(checkInfo, 0)),
                     sqlHandler.getWeekTime(dateHandler.getWeekDayList($cache.get("selectDay")))
                 )
-                tools.reloadView('check')
             }
         }
     }],

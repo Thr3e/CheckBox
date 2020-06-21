@@ -49,7 +49,8 @@ class DateHandler{
         for (var j = 1; j <= lastDay; j++){
             list.push({
                 text:"" + j,
-                id:`${year}${month < 10 ? "0" + month.toString() : month}${j < 10 ? "0" + j.toString() : j}`})
+                id:`${year}${month < 10 ? "0" + month.toString() : month}${j < 10 ? "0" + j.toString() : j}`
+            })
         }
         for (var k = 6; k > lastDate; k--){
             list.push({text:"",id:""})

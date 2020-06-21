@@ -1,14 +1,15 @@
 const DateHandler = require('./date.handler')
 const SQLHandler  = require('./sql.handler')
 const Tools       = require('./tool.handler')
-var sqlHandler    = new SQLHandler
-var dateHandler   = new DateHandler
-var tools         = new Tools
-var $consts       = JSON.parse($file.read("assets/constant.json").string)
+const sqlHandler  = new SQLHandler
+const dateHandler = new DateHandler
+const tools       = new Tools
+const $consts     = JSON.parse($file.read("assets/constant.json").string)
+const day_options_view = require('./dayOptions.view')
 
-var titleH = 40
-var cellH  = 47
-var infoH  = 70
+const titleH = 40
+const cellH  = 47
+const infoH  = 70
 
 var calender_time_view = {
     type:"view",
@@ -55,18 +56,10 @@ var calender_time_view = {
                         year:date[3] * 1,
                         month:$consts.sortMonthObj[date[1]] * 1,
                         day:date[2],
-                        weekDay:$consts.sortWeekObj[date[0]]
+                        weekDay:$consts.sortWeekObj[date[0]],
                     }
-                    var id = tools.getDateId(selectDay)
-                    //刷新数据
-                    tools.updateCache(
-                        selectDay,
-                        dateHandler.getDayList(selectDay),
-                        Object.assign(sqlHandler.getWorkTime(id), sqlHandler.getTotalTime(selectDay, 0)),
-                        sqlHandler.getWeekTime(dateHandler.getWeekDayList(selectDay))
-                    )
-                    //刷新页面
-                    tools.reloadView("check")
+                    selectDay.date = tools.getDateId(selectDay)
+                    updateSelectDay(selectDay)
                 }
             )
         },
@@ -97,26 +90,10 @@ var calender_time_view = {
             selectDay.date = tools.getDateId(selectDay)
             selectDay.dateStr = tools.getDateString(selectDay, '-')
             selectDay.weekDay = tools.getWeekDay({year:year, month:mon, day:day})
-            //刷新页面
-            tools.updateCache(
-                selectDay,
-                dateHandler.getDayList(selectDay),
-                Object.assign(sqlHandler.getWorkTime(tools.getDateId(selectDay)), sqlHandler.getTotalTime(selectDay, 0)),
-                sqlHandler.getWeekTime(dateHandler.getWeekDayList(selectDay))
-            )
-            tools.reloadView("check")
+            updateSelectDay(selectDay)
         },
         doubleTapped(sender){
-            let selectDay = $cache.get("curDay");
-            //刷新数据
-            tools.updateCache(
-                selectDay,
-                dateHandler.getDayList(selectDay),
-                Object.assign(sqlHandler.getWorkTime(tools.getDateId(selectDay)), sqlHandler.getTotalTime(selectDay, 0)),
-                sqlHandler.getWeekTime(dateHandler.getWeekDayList(selectDay))
-            )
-            //刷新页面
-            tools.reloadView("check")
+            updateSelectDay($cache.get("curDay"));
         }
     }
 }
@@ -124,7 +101,6 @@ var calender_title_view = {
     type: "matrix",
     props: {
         id:"calender_title_view",
-        title:"calender_title",
         scrollEnabled:false,
         columns: 7,
         itemHeight: titleH,
@@ -161,58 +137,48 @@ var calender_body_view = {
     type: "matrix",
     props: {
         id:"calender_body_view",
-        title:"calender_title",
         scrollEnabled:false,
         bgcolor:$color($consts.colorList.cur),
         itemHeight:45,
         columns: 7,
         spacing: 1,
         template: [{
-            type: "label",
+            type: "view",
             props: {
-                id: "day_title",
-                align: $align.center,
-                font: $font($consts.font.regular,20)
+                id:"day_box"
             },
-            layout(make){
-                make.top.left.right.equalTo(0)
-                make.height.equalTo(25)
-            },
+            layout: $layout.fill,
+            views:[{
+                type: "label",
+                props: {
+                    id: "day_title",
+                    align: $align.center,
+                    font: $font($consts.font.regular,20)
+                },
+                layout(make){
+                    make.top.left.right.equalTo(0)
+                    make.height.equalTo(25)
+                },
+            },{
+                type: "label",
+                props: {
+                    id: "work_time",
+                    align: $align.center,
+                    font: $font($consts.font.regular,12)
+                },
+                layout(make, view){
+                    make.top.equalTo(view.prev.bottom)
+                    make.right.left.equalTo(0)
+                    make.height.equalTo(19)
+                },
+            }],
             events:{
                 longPressed:function(info){
-                    let id = info.sender.info.id;
-                    if(id != "" && sqlHandler.verifyData(id)){
-                        tools.alertDeleteWarn(function(){
-                            sqlHandler.cleanData(id);
-                            sqlHandler.cacheInit();
-                            dateHandler.cacheInit($cache.get("selectDay"));
-                            tools.reloadView("check");
-                        });
-                    }
-                }
-            }
-        },{
-            type: "label",
-            props: {
-                id: "work_time",
-                align: $align.center,
-                font: $font($consts.font.regular,12)
-            },
-            layout(make, view){
-                make.top.equalTo(view.prev.bottom)
-                make.right.left.equalTo(0)
-                make.height.equalTo(19)
-            },
-            events:{
-                longPressed:function(info){
-                    let id = info.sender.info.id;
-                    if(id != "" && sqlHandler.verifyData(id)){
-                        tools.alertDeleteWarn(function(){
-                            sqlHandler.cleanData(id);
-                            sqlHandler.cacheInit();
-                            dateHandler.cacheInit();
-                            tools.reloadView("check");
-                        });
+                    var selectDay = info.sender.info;
+                    if(sqlHandler.verifyData(selectDay.date)){
+                        updateSelectDay(selectDay);
+                        day_options_view.props.info = selectDay
+                        $('main_view').add(day_options_view)
                     }
                 }
             }
@@ -231,36 +197,7 @@ var calender_body_view = {
                 selectDay.day = parseInt(data.day_title.text)
                 selectDay.date = tools.getDateId(selectDay)
                 selectDay.weekDay = tools.getWeekDay(selectDay)
-                //刷新数据
-                tools.updateCache(
-                    selectDay,
-                    dateHandler.getDayList(selectDay),
-                    Object.assign(sqlHandler.getWorkTime(selectDay.date), sqlHandler.getTotalTime(selectDay, 0)),
-                    sqlHandler.getWeekTime(dateHandler.getWeekDayList(selectDay))
-                )
-                tools.reloadView('check');
-            }
-            if(data.work_time.text){
-                let workTypeObj = sqlHandler.queryWorkTime(data.work_time.info.id);
-                if(workTypeObj.hasData){
-                    $("overtime_btn").hidden = workTypeObj.type == 0 ? false : true
-                    $("overtime_un_btn").hidden = workTypeObj.type == 1 ? false : true
-                }
-                if($("overtime_view").alpha == 0){
-                    $ui.animate({
-                        duration: 0.5,
-                        animation: function() {
-                            $("overtime_view").alpha = 0.7
-                        },
-                    });
-                }
-            }else if(!data.work_time.text && $("overtime_view").alpha != 0){
-                $ui.animate({
-                    duration: 0.5,
-                    animation: function() {
-                        $("overtime_view").alpha = 0.0
-                    },
-                });
+                updateSelectDay(selectDay);
             }
         }
     }
@@ -286,7 +223,7 @@ var calender_info_view = {
 var calender_view = {
     type:"view",
     props:{
-        id:('calender_view'),
+        id:'calender_view',
         bgcolor:$color($consts.colorList.dark),
         smoothRadius:10,
         info:{
@@ -306,3 +243,13 @@ var calender_view = {
 }
 
 module.exports = calender_view
+
+function updateSelectDay(selectDay) {
+    //刷新数据
+    tools.updateCache(
+        selectDay,
+        dateHandler.getDayList(selectDay),
+        Object.assign(sqlHandler.getWorkTime(selectDay.date), sqlHandler.getTotalTime(selectDay, 0)),
+        sqlHandler.getWeekTime(dateHandler.getWeekDayList(selectDay))
+    )
+}

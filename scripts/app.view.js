@@ -1,7 +1,6 @@
 const nor_view      = require('./basic.view')
 const calender_view = require('./calendar.view')
 const forget_view   = require('./forgotten.view')
-const overtime_view = require('./overtime.view')
 const $consts       = JSON.parse($file.read("assets/constant.json").string)
 const viewWidth     = 300
 const paddingX      = ($device.info.screen.width - viewWidth) / 2
@@ -61,10 +60,5 @@ $ui.render({
     statusBarStyle:0,
     bgcolor:$color($consts.colorList.bgcolor)
   },
-  events:{
-    layoutSubViews: view => {
-      $console.info("asdasdas");
-    }
-  },
-  views: [checkbox, calender, forget, overtime_view]
+  views: [checkbox, calender, forget]
 })

@@ -7,6 +7,7 @@ class SQLHandler {
     _dbQuery(callback){
         var dbObj = callback($sqlite.open("baseDB.db"))
         $sqlite.close(dbObj.data_base)
+        dbObj.data_base = null;
         delete(dbObj['data_base'])
         if (dbObj) return dbObj
     }
@@ -14,7 +15,7 @@ class SQLHandler {
     //增加表字段
     updateTableWithNewColum(){
         this._dbQuery(db => {
-            db.update("ALTER TABLE CheckLog ADD COLUMN TYPE INTEGER DEFAULT 0")
+            db.update("ALTER TABLE CheckLog ADD COLUMN CHANGEPO INTEGER DEFAULT 0")
             return {data_base:db}
         })
     }
@@ -24,13 +25,16 @@ class SQLHandler {
         this._dbQuery(function(db){
             var rs = db.query('SELECT * FROM CheckLog')
             if (rs.error){
-                db.update("CREATE TABLE CheckLog (ID INTEGER PRIMARY KEY, YEAR INTEGER, MONTH INTEGER, DAY INTEGER, STARTTIME TEXT, ENDTIME TEXT, STARTDATA REAL, ENDDATA REAL, WORKTIME REAL, TYPE INTEGER DEFAULT 0)")
+                db.update("CREATE TABLE CheckLog (ID INTEGER PRIMARY KEY, YEAR INTEGER, MONTH INTEGER, DAY INTEGER, STARTTIME TEXT, ENDTIME TEXT, STARTDATA REAL, ENDDATA REAL, WORKTIME REAL, TYPE INTEGER DEFAULT 0, CHANGEPO INTEGER DEFAULT 0)")
             }
             return {data_base:db}
         })
     }
     
     verifyData(id){
+        if(!id) {
+            return false;
+        }
         return this._dbQuery(function(db){
             var rs = db.query({
                 sql:"SELECT * FROM CheckLog WHERE ID = ?",
@@ -45,12 +49,11 @@ class SQLHandler {
     }
     
     queryWorkTime(id){
-        let self = this;
         return this._dbQuery(function(db){
             var hasData = false;
             var wt = 0;
             var type = 0;
-            if(self.verifyData(id)){
+            if(this.verifyData(id)){
                 var rs = db.query({
                     sql:"SELECT WORKTIME,TYPE FROM CheckLog WHERE ID = ?",
                     args:[id]
@@ -67,15 +70,15 @@ class SQLHandler {
                 worktime  : wt,
                 type      : type
             }
-        })
+        }.bind(this))
     }
       
     
     createNewLine(dateObj){
-        var args = [dateObj.date, dateObj.year, dateObj.month, dateObj.day, null, null, null, null, null, 0]
+        var args = [dateObj.date, dateObj.year, dateObj.month, dateObj.day, null, null, null, null, null, 0, 0]
         this._dbQuery((db) => {
             db.update({
-                sql:"INSERT INTO CheckLog values (?,?,?,?,?,?,?,?,?,?)",
+                sql:"INSERT INTO CheckLog values (?,?,?,?,?,?,?,?,?,?,?)",
                 args: args
             })
             return {data_base: db}
@@ -244,6 +247,16 @@ class SQLHandler {
         this._dbQuery(db => {
             db.update({
                 sql:"UPDATE CheckLog SET TYPE = ? WHERE ID = ?",
+                args:[type, id]
+            })
+            return {data_base:db}
+        })
+    }
+
+    updatePOType(id, type){
+        this._dbQuery(db => {
+            db.update({
+                sql:"UPDATE CheckLog SET CHANGEPO = ? WHERE ID = ?",
                 args:[type, id]
             })
             return {data_base:db}

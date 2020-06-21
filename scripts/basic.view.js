@@ -1,10 +1,10 @@
 const DateHandler = require('./date.handler')
 const SqlHandler  = require('./sql.handler')
 const Tools       = require('./tool.handler')
-var dateHandler = new DateHandler
-var sqlHandler  = new SqlHandler
-var tools       = new Tools
-var $consts = JSON.parse($file.read("assets/constant.json").string)
+const dateHandler = new DateHandler
+const sqlHandler  = new SqlHandler
+const tools       = new Tools
+const $consts     = JSON.parse($file.read("assets/constant.json").string)
 
 var message_view = {
   type:"view",
@@ -96,13 +96,11 @@ var checkin_btn_view = {
       }
       //刷新数据
       tools.updateCache(
-          curDate,
-          dateHandler.getDayList(curDate),
-          Object.assign(sqlHandler.getWorkTime(curDate.date), sqlHandler.getTotalTime(curDate, 0)),
-          sqlHandler.getWeekTime(dateHandler.getWeekDayList(curDate))
+        curDate,
+        dateHandler.getDayList(curDate),
+        Object.assign(sqlHandler.getWorkTime(curDate.date), sqlHandler.getTotalTime(curDate, 0)),
+        sqlHandler.getWeekTime(dateHandler.getWeekDayList(curDate))
       )
-      //刷新页面
-      tools.reloadView("check")
     }
   }
 }
