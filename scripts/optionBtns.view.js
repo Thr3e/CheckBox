@@ -82,33 +82,66 @@ var overtime_view = {
 }
 
 // 切PO
+var changepo_btn = {
+    type:"button",
+    props:{
+        title:"Change PO",
+        id:"changepo_btn",
+        font: $font($consts.font.bold,18),
+        bgcolor:$color($consts.colorList.dark)
+    },
+    layout:$layout.fill,
+    events:{
+        tapped(sender){
+            if(sqlHandler.queryWorkTime(curDay.date).hasData){
+                sender.remove();
+                $('changePO_view').add(samepo_btn)
+                sqlHandler.updatePOType(curDay.date, 1)
+                reloadData()
+            }
+            
+        }
+    }
+}
+
+var samepo_btn = {
+    type:"button",
+    props:{
+        title:"Same PO",
+        id:"samepo_btn",
+        font: $font($consts.font.bold,18),
+        bgcolor:$color($consts.colorList.dark)
+    },
+    layout:$layout.fill,
+    events:{
+        tapped(sender){
+            if(sqlHandler.queryWorkTime(curDay.date).hasData){
+                sender.remove();
+                $('overtime_view').add(changepo_btn)
+                sqlHandler.updatePOType(curDay.date, 0)
+                reloadData();
+            }
+        }
+    }
+}
 var changePO_view = {
     type:"view",
     props:{
         id:'changePO_view',
         // radius:'19%',
     },
+    views:[],
     layout: $layout.fill,
-    views:[{
-        type:"button",
-        props:{
-            title:"ChangePO",
-            id:"changePO_btn",
-            font: $font($consts.font.bold,18),
-            bgcolor:$color($consts.colorList.dark)
-        },
-        layout:$layout.fill,
-        events:{
-            tapped(sender){
-                if(sqlHandler.verifyData(curDay.date)){
-                    tools.alertDeleteWarn(function(){
-                        // sqlHandler.cleanData(curDay.date);
-                        reloadData()
-                    });
-                }
+    events:{
+        ready(sender){
+            let POType = sqlHandler.queryPOType(curDay.date);
+            if(POType){
+                sender.add(samepo_btn);
+            }else {
+                sender.add(changepo_btn);
             }
         }
-    }]
+    }
 }
 
 // 删除选中日期的记录

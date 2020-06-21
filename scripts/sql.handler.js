@@ -72,6 +72,25 @@ class SQLHandler {
             }
         }.bind(this))
     }
+
+    queryPOType(id){
+        return this._dbQuery(function(db){
+            var poType = 0;
+            if(this.verifyData(id)){
+                var rs = db.query({
+                    sql:"SELECT CHANGEPO FROM CheckLog WHERE ID = ?",
+                    args:[id]
+                }).result
+                while(rs.next()){
+                    poType = rs.values.CHANGEPO;
+                }
+            }
+            return {
+                data_base : db,
+                poType    : poType
+            }
+        }.bind(this)).poType
+    }
       
     
     createNewLine(dateObj){
@@ -166,16 +185,27 @@ class SQLHandler {
             var total = 0
             var list = {}
             var dayCount = 0
+            var continueAdd = true;
             var rs = db.query({
-              sql:"SELECT WORKTIME,DAY,TYPE FROM CheckLog WHERE YEAR = ? AND MONTH = ?",
+              sql:"SELECT WORKTIME,DAY,TYPE,CHANGEPO FROM CheckLog WHERE YEAR = ? AND MONTH = ?",
               args:[val.year, val.month]
             }).result
             while(rs.next()){
                 list[rs.values.DAY] = rs.values.WORKTIME
                 if(rs.values.TYPE === type){
                     if (rs.values.WORKTIME || rs.values.WORKTIME === 0){
-                        dayCount++
-                        total += rs.values.WORKTIME
+                        if(rs.values.CHANGEPO){
+                            if(rs.values.DAY <= val.day) {
+                                dayCount = 0;
+                                total = 0
+                            } else {
+                                continueAdd = false;
+                            }
+                        }
+                        if(continueAdd){
+                            dayCount++
+                            total += rs.values.WORKTIME
+                        }
                     }
                 }
             }
